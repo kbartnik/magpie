@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Welcome.md",
+                "file": "wiki/concepts/Go Knowledge Map.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Welcome"
+              "title": "Go Knowledge Map"
             }
           }
         ]
@@ -204,8 +204,30 @@
       "bases:Create new base": false
     }
   },
-  "active": "1f8e6d0477d50d3b",
+  "active": "97b5058cbf28e6e4",
   "lastOpenFiles": [
+    "wiki/concepts/Go Knowledge Map.md",
+    "archive/clippings/2026-06-01-no-vibes-allowed-context-engineering.md",
+    "archive/clippings/2026-05-31-llm-wiki-compiler-deep-dive.md",
+    "archive/clippings/2026-05-20-what-is-harness-engineering.md",
+    "archive/clippings/2026-05-20-harness-engineering-memory-gap.md",
+    "archive/clippings/2026-05-20-eleven-agentic-patterns.md",
+    "archive/books/2026-05-31-learning-go-2e.md",
+    "archive/clippings",
+    "archive/books",
+    "archive",
+    "resources/media/f482a9e111b046d9dea21e268a1f8dab_MD5.webp",
+    "resources/media/dc02a6edf6b6f8f79b853d7e809a476f_MD5.webp",
+    "resources/media/9eb9e3a4c7fecbf9d599ad3a66c514b4_MD5.webp",
+    "resources/media/9db9e0c3bbb82dc68ac3f688868f175e_MD5.webp",
+    "resources/media/97eeb06f18564de219f7516e9af76e33_MD5.webp",
+    "resources/media/809c5b04973e9ef33bb651551dc9a41e_MD5.webp",
+    "resources/media/6b186be725a46cfb1dc97e7f3c3d2b61_MD5.webp",
+    "resources/media/646fe23f05e709641161f466ed1d72fd_MD5.webp",
+    "resources/media/62db0763d7cc3b4628bc8e5f5b782773_MD5.webp",
+    "resources/media/1736686ac91552ef6b415ba156af189a_MD5.webp",
+    "resources/media",
+    "resources",
     "Welcome.md"
   ]
 }

@@ -31,8 +31,10 @@ Done looks like: confidently writing and reasoning about these patterns without 
 
 ## Key Concepts
 
-- **Go modules**: `go.mod` declares the module path (import namespace) and Go version; `go.sum` locks dependency hashes
-- **SSH config IdentityFile**: per-host key selection in `~/.ssh/config`; without a `Host github.com` block, `id_ed25519_github` is never offered to GitHub
+- **Go modules**: `go.mod` declares the module path (import namespace) and Go version; `go.sum` locks dependency hashes — see [[Go Knowledge Map]] for the full concept map
+- **SSH config IdentityFile**: per-host key selection in `~/.ssh/config`; without a `Host github.com` block, `id_ed25519_github` is never offered to GitHub — see [[SSH Config]]
+- **Cobra CLI**: `PersistentPreRunE` propagates to all subcommands; `RunE` vs `Run` for error handling — see [[Cobra CLI]]
+- **XDG Base Directory**: `os.UserConfigDir()` + manual `XDG_CONFIG_HOME` check for cross-platform config paths — see [[XDG Base Directory]]
 
 ## What I Now Understand
 

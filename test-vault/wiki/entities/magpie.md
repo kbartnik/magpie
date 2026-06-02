@@ -56,6 +56,16 @@ Scaffolds vault directories, rewrites `.claude/settings.json` hooks to clean `ma
 
 See `/Users/kurt/.claude/plans/let-s-back-up-if-jolly-parasol.md` for the full task list.
 
-## Open
+## Implementation
 
+Built with [[Cobra CLI]] (command tree, `PersistentPreRunE` for vault resolution). Config follows [[XDG Base Directory]] spec via `os.UserConfigDir()`. See [[Go Knowledge Map]] for the Go concept cluster this project builds on. [[SSH Config]] covers the GitHub SSH key setup required to push.
+
+## Design
+
+See [[magpie-design-signals-from-wiki]] for what the vault's accumulated knowledge implies for magpie's design.
+
+## Open Questions
+
+- [[Magpie Claim-Level Provenance]] — how to track which archive source supports each wiki claim
+- [[Magpie Pipeline vs Hybrid]] — pipeline (strict stage separation) vs hybrid (stages share context) architecture decision
 - How changes refined in this testbed vault flow back into `~/Source/nexus-template` is not yet documented
