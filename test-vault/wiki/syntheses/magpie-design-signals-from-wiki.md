@@ -37,14 +37,14 @@ From [[Harness Engineering]]: `Agent = Model + Harness`. The harness does six th
 
 ## Exit Code Design Should Be Systematic
 
-The wiki distinguishes two exit semantics (see [[Claude Code Hooks]]):
+The wiki distinguishes two exit semantics (see Claude Code Hooks):
 
 - **Exit 2** = hard block — the action does not run; Claude cannot override
 - **Exit 1** = logged warning — Claude proceeds; you have logging, not enforcement
 
 Magpie already uses this for `archive-file`. It should be a **design rule across all subcommands**, not an accident of one command's history.
 
-The four-safety-levels escalation pattern (also from [[Claude Code Hooks]]):
+The four-safety-levels escalation pattern (also from Claude Code Hooks):
 1. Dry-run — show what would change
 2. Diff preview — exact diff before applying
 3. Explicit approval gate — require `y/n`
@@ -54,7 +54,7 @@ Magpie's `--force` flag is essentially jumping from 2 to 4. The intermediate lev
 
 ## Structured Output Is an Interface Contract
 
-[[Agentic Workflow Patterns]] is explicit: handoffs should be "typed payloads, not transcript dumps." [[Progressive Disclosure Architecture]] adds: "Scripts fail hard with structured codes; the AI interprets those codes into user guidance, alternative lookups, and retry logic."
+[[Agentic Workflow Patterns]] is explicit: handoffs should be "typed payloads, not transcript dumps." Progressive Disclosure Architecture adds: "Scripts fail hard with structured codes; the AI interprets those codes into user guidance, alternative lookups, and retry logic."
 
 Magpie's current CLI output mixes human prose and structured fields. The clean design:
 - **stdout**: machine-parseable (structured text or `--json` flag)
@@ -65,7 +65,7 @@ Structured error codes let Claude reason about recovery without parsing prose. "
 
 ## The Deterministic Split Is Already the Architecture — Name It
 
-From [[Agent Memory Architectures]] (Fat Skills section):
+From Agent Memory Architectures (Fat Skills section):
 
 > **Deterministic split**: latent work (synthesis, pattern recognition) stays with the LLM; deterministic work (SQL, file ops, calculations) routes to code.
 
@@ -73,7 +73,7 @@ Magpie *is* this principle compiled into a binary. Making the split explicit in 
 
 ## Plugin Metadata Is the Router
 
-From [[Agent Memory Architectures]] (Fat Skills / resolver insight):
+From Agent Memory Architectures (Fat Skills / resolver insight):
 
 > Skill descriptions *are* the router. The model reads descriptions and matches intent automatically. No explicit routing code needed.
 
@@ -81,7 +81,7 @@ Applied to magpie's registered plugin model: the `--magpie-describe` metadata *i
 
 ## Fat Skills / Cron Autonomy Direction
 
-The wiki notes explicitly: "the magpie project may push toward the Fat Skills direction (cron-based autonomous operations, sonar split)." The Fat Skills model from [[Agent Memory Architectures]] offers three concrete mechanisms worth evaluating:
+The wiki notes explicitly: "the magpie project may push toward the Fat Skills direction (cron-based autonomous operations, sonar split)." The Fat Skills model from Agent Memory Architectures offers three concrete mechanisms worth evaluating:
 
 - **Always-on skills** — fire on every message; e.g., passive entity linker, unlinked-mention detector
 - **Cron skills** — run autonomously on schedule, filing results to `reports/`; e.g., vault health checks, orphan detection, stale link sweeping
@@ -105,9 +105,9 @@ Concrete: `log-append` could accept a `--structured` flag that also writes a JSO
 
 - [[magpie]] — project entity with implementation plan and current status
 - [[Harness Engineering]] — the six-dimension framework; magpie is one harness component
-- [[Agent Memory Architectures]] — decision framework for memory; Fat Skills as the autonomy direction
+- Agent Memory Architectures — decision framework for memory; Fat Skills as the autonomy direction
 - [[Agentic Workflow Patterns]] — Programmatic Prerequisites and Structured Handoff patterns
-- [[Claude Code Hooks]] — exit code semantics, safety levels, AI-checking-AI pattern
-- [[Progressive Disclosure Architecture]] — three-tier output design; AI resilience layer
-- [[rtk]] — production-scale PreToolUse hook; concrete harness implementation to study
-- [[Graphify]] — PreToolUse injection pattern; another harness component in the same ecosystem
+- Claude Code Hooks — exit code semantics, safety levels, AI-checking-AI pattern
+- Progressive Disclosure Architecture — three-tier output design; AI resilience layer
+- rtk — production-scale PreToolUse hook; concrete harness implementation to study
+- Graphify — PreToolUse injection pattern; another harness component in the same ecosystem

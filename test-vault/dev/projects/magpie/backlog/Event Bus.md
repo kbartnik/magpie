@@ -29,4 +29,4 @@ One concrete v1.0 subscriber (magpie-git auto-commit) is insufficient design pre
 
 ## See also
 
-[[2026-05-21 — Red Team Review]] — failure mode 3 and steelman section explain the deferral reasoning.
+2026-05-21 — Red Team Review — failure mode 3 and steelman section explain the deferral reasoning.

@@ -10,7 +10,7 @@ sources:
   - "archive/clippings/2026-05-31-llm-wiki-compiler-deep-dive.md"
 related:
   - "[[magpie]]"
-  - "[[LLM Wiki Pattern]]"
+  - "LLM Wiki Pattern"
 tags:
   - vault-meta
   - magpie
@@ -29,4 +29,4 @@ For a vault that grows organically, the hybrid model captures connections that a
 ## See Also
 
 - [[magpie]] — current design and phase roadmap
-- [[LLM Wiki Pattern]] — frozen/agentic spectrum; pipeline vs hybrid as a position on that spectrum
+- LLM Wiki Pattern — frozen/agentic spectrum; pipeline vs hybrid as a position on that spectrum

@@ -66,7 +66,7 @@ Bundled plugins (same repo): `magpie-stats` (vault statistics), `magpie-git` (va
 
 ## Learning Project
 
-Same model as [[preflight-sync-go]] — work proceeds phase by phase. Each phase has a plan with "You Drive" sections for the meaningful implementation decisions. Claude scaffolds boilerplate and advises; the user drives design decisions and core logic.
+Same model as preflight-sync-go — work proceeds phase by phase. Each phase has a plan with "You Drive" sections for the meaningful implementation decisions. Claude scaffolds boilerplate and advises; the user drives design decisions and core logic.
 
 ## Phase Sequence
 
@@ -82,11 +82,11 @@ Same model as [[preflight-sync-go]] — work proceeds phase by phase. Each phase
 | 7 | Context — `context status` |
 | 8 | Migration from vault-tools |
 
-[[magpie-claude]] (`github.com/kbartnik/magpie-claude`) starts after Phase 4 — separate project and repo.
+magpie-claude (`github.com/kbartnik/magpie-claude`) starts after Phase 4 — separate project and repo.
 
 ## Backlog
 
-![[backlog.base]]
+!backlog.base
 
 ## Plans
 

@@ -44,7 +44,7 @@ Of the six agent dimensions (Perception, Brain, Memory, Planning, Action, Collab
 
 These have names now — design your harness to compensate:
 
-- **[[Context Rot]]** — performance decay as context fills with stale or low-signal tokens
+- **Context Rot** — performance decay as context fills with stale or low-signal tokens
 - **Context panic** — agent skips steps and short-circuits plans under context pressure
 - **Lost-in-the-middle** — information buried in the middle of long prompts is under-attended vs. beginning/end
 - **U-shaped attention** — the generalization: attention follows a U-curve over long contexts
@@ -65,7 +65,7 @@ The cockpit metaphor (Fitts & Jones, 1947 USAF study): when operators repeat the
 
 ## Mechanical Sympathy for LLMs
 
-Harness engineering is [[Mechanical Sympathy]] applied to a new substrate. Just as LMAX Disruptor (2011) optimized for CPU cache lines and branch prediction, harness engineering optimizes for LLM failure modes: context rot, context panic, lost-in-the-middle, U-shaped attention.
+Harness engineering is Mechanical Sympathy applied to a new substrate. Just as LMAX Disruptor (2011) optimized for CPU cache lines and branch prediction, harness engineering optimizes for LLM failure modes: context rot, context panic, lost-in-the-middle, U-shaped attention.
 
 ## What the Harness Is Not
 
@@ -74,14 +74,14 @@ Not a try/catch wrapper. Not a guardrail preventing bad outputs. It is the engin
 ## See Also
 
 - [[Agentic Workflow Patterns]] — the practice layer; specific patterns for agent coordination
-- [[JSON Schema Discipline]] — schema design is part of harness design
-- [[Context Rot]] — the primary failure mode harness memory management prevents
-- [[Mechanical Sympathy]] — the underlying engineering principle
-- [[Graphify]] — implements the PreToolUse hook injection pattern; a concrete harness component
-- [[Claude Code Memory Architecture]] — the memory dimension implemented: four-layer system for cross-session persistence
-- [[Claude Code Hooks]] — the architectural constraints dimension implemented: deterministic lifecycle control
-- [[Claude Code Skills]] — the capability acquisition dimension implemented: PDA-based skill packaging
-- [[Agent Memory Architectures]] — decision framework for the harness memory dimension: RAG vs LLM Wiki vs Fat Skills
-- [[LLM Wiki Pattern]] — the "compiled, auditable artifact" approach to harness memory; Karpathy's pattern and implementations
-- [[Digital Phenotyping]] — structural parallel: observability/memory applied to human behavioral data rather than AI system logs; same instrumentation → inference → intervention loop
-- [[Agentic Identity and Zero Trust]] — vault-as-middleware is the "tool contracts and validators" harness dimension extended to backend identity bridging; short-lived credential issuance is a harness responsibility
+- JSON Schema Discipline — schema design is part of harness design
+- Context Rot — the primary failure mode harness memory management prevents
+- Mechanical Sympathy — the underlying engineering principle
+- Graphify — implements the PreToolUse hook injection pattern; a concrete harness component
+- Claude Code Memory Architecture — the memory dimension implemented: four-layer system for cross-session persistence
+- Claude Code Hooks — the architectural constraints dimension implemented: deterministic lifecycle control
+- Claude Code Skills — the capability acquisition dimension implemented: PDA-based skill packaging
+- Agent Memory Architectures — decision framework for the harness memory dimension: RAG vs LLM Wiki vs Fat Skills
+- LLM Wiki Pattern — the "compiled, auditable artifact" approach to harness memory; Karpathy's pattern and implementations
+- Digital Phenotyping — structural parallel: observability/memory applied to human behavioral data rather than AI system logs; same instrumentation → inference → intervention loop
+- Agentic Identity and Zero Trust — vault-as-middleware is the "tool contracts and validators" harness dimension extended to backend identity bridging; short-lived credential issuance is a harness responsibility

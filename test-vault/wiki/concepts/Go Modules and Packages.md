@@ -60,7 +60,7 @@ Go workspaces (`go work`) allow simultaneous development across multiple modules
 go work init ./mylib ./myapp
 ```
 
-The `go.work` file is local and should not be committed. See [[Go Workspaces]].
+The `go.work` file is local and should not be committed. See Go Workspaces.
 
 ## Key Commands
 
@@ -85,5 +85,5 @@ By default, Go fetches modules through `proxy.golang.org`, which caches versions
 
 ## See Also
 
-- [[Go Workspaces]] — multi-module development
-- [[Go Tooling]] — build tags, go generate, vulnerability scanning
+- Go Workspaces — multi-module development
+- Go Tooling — build tags, go generate, vulnerability scanning

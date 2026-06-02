@@ -123,7 +123,7 @@ The vault's wiki structure follows two hub conventions that magpie init and lint
 
 ## Learning Project
 
-Same model as [[preflight-sync-go]], with an explicit Go learning layer added:
+Same model as preflight-sync-go, with an explicit Go learning layer added:
 
 - **TDD throughout.** Tests are written before implementation. Every phase has a failing test suite before a line of production code is written.
 - **Tutorial material before implementation.** Where relevant, each phase opens with Go language concepts and idiomatic patterns — not generic documentation, but the specific idioms the phase will use. Each tutorial block is labeled and skippable: say "I know this" and we move straight to the You Drive. If a gap surfaces during implementation, it gets filled in context rather than by backtracking.

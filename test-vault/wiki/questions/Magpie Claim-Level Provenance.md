@@ -10,7 +10,7 @@ sources:
   - "archive/clippings/2026-05-31-llm-wiki-compiler-deep-dive.md"
 related:
   - "[[magpie]]"
-  - "[[LLM Wiki Pattern]]"
+  - "LLM Wiki Pattern"
 tags:
   - vault-meta
   - magpie
@@ -29,4 +29,4 @@ The implementation cost is significant: claim-level provenance requires either s
 ## See Also
 
 - [[magpie]] — the project this decision belongs to
-- [[LLM Wiki Pattern]] — the compiler architecture and claim-level provenance design
+- LLM Wiki Pattern — the compiler architecture and claim-level provenance design

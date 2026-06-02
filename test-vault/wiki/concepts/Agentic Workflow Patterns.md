@@ -58,7 +58,7 @@ Coordinator → Researcher(s) [parallel]
                        → if pass: ship
 ```
 
-The `if verdict.pass_: break` line is load-bearing. Without a structured evaluator output, the loop has no reliable exit condition. See [[JSON Schema Discipline]].
+The `if verdict.pass_: break` line is load-bearing. Without a structured evaluator output, the loop has no reliable exit condition. See JSON Schema Discipline.
 
 ## Two-Agent Architecture (Anthropic Pattern)
 
@@ -90,7 +90,7 @@ A workflow composition pattern for context-managed coding in complex codebases (
 
 **Don't outsource the thinking.** AI amplifies the thinking you bring. There is no prompt that replaces reading and approving the plan.
 
-> Note: Horthy acknowledges "RPI" will likely undergo [[Semantic Diffusion]] once widely adopted. The stable principle is *compaction at phase boundaries*, not the acronym.
+> Note: Horthy acknowledges "RPI" will likely undergo Semantic Diffusion once widely adopted. The stable principle is *compaction at phase boundaries*, not the acronym.
 
 ## Pattern Composition
 
@@ -169,8 +169,8 @@ Visual reference for each pattern's shape. The shape is what makes patterns reco
 
 ## See Also
 
-- [[JSON Schema Discipline]] — which patterns require schemas, which benefit, which are harmed
+- JSON Schema Discipline — which patterns require schemas, which benefit, which are harmed
 - [[Harness Engineering]] — the broader discipline these patterns live within
-- [[Context Rot]] — failure mode that programmatic prerequisites and clean-state disciplines prevent
-- [[IDSD]] — methodology for structuring what the human brings to these patterns: intent (what is wanted) and expectations (what done means), so the agent fills the implementation gap rather than the requirements gap
-- [[Agentic Identity and Zero Trust]] — the security layer all tool-use patterns require; the last mile problem breaks Zero Trust when agents connect to legacy backends via API keys
+- Context Rot — failure mode that programmatic prerequisites and clean-state disciplines prevent
+- IDSD — methodology for structuring what the human brings to these patterns: intent (what is wanted) and expectations (what done means), so the agent fills the implementation gap rather than the requirements gap
+- Agentic Identity and Zero Trust — the security layer all tool-use patterns require; the last mile problem breaks Zero Trust when agents connect to legacy backends via API keys

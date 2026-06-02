@@ -40,4 +40,4 @@ The section parser — given `## Current Focus` as the target heading, find it i
 
 ## Note
 
-`context park` is deferred to [[magpie-claude — Phase B — Session + Park|magpie-claude Phase B]]. The distinction between parking and capturing isn't meaningful without session context.
+`context park` is deferred to magpie-claude Phase B. The distinction between parking and capturing isn't meaningful without session context.

@@ -118,4 +118,4 @@ C# analogy: like implementing `IError` without ever writing `implements`. Any ty
 
 Both walk the error chain via `Unwrap` automatically.
 
-*Related: [[Go Defined Types]] (sentinel errors follow the same named-constant pattern), [[Go Structured Logging]] (errors are surfaced via `slog.Any("err", err)` in structured log output)*
+*Related: Go Defined Types (sentinel errors follow the same named-constant pattern), Go Structured Logging (errors are surfaced via `slog.Any("err", err)` in structured log output)*
