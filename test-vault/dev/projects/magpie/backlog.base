@@ -1,0 +1,56 @@
+filters:
+  and:
+    - type == "backlog-item"
+    - file.inFolder("dev/projects/magpie/backlog")
+formulas:
+  days_old: (today() - date(created)).days
+  priority_label: if(priority == "high", "🔴 High", if(priority == "medium", "🟡 Medium", "🟢 Low"))
+  is_overdue: if(due, date(due) < today() && status != "done" && status != "dropped", false)
+  due_label: if(due, if(formula.is_overdue, "⚠️ " + due, due), "")
+properties:
+  formula.priority_label:
+    displayName: Priority
+  formula.due_label:
+    displayName: Due
+  formula.days_old:
+    displayName: Age (days)
+views:
+  - type: table
+    name: Active
+    filters:
+      and:
+        - status != "done"
+        - status != "dropped"
+    groupBy:
+      property: status
+      direction: ASC
+    order:
+      - file.name
+      - status
+      - formula.priority_label
+      - formula.due_label
+      - formula.days_old
+    sort:
+      - property: file.name
+        direction: ASC
+    columnSize:
+      file.name: 463
+  - type: table
+    name: All Items
+    order:
+      - file.name
+      - formula.priority_label
+      - status
+      - formula.due_label
+      - created
+  - type: cards
+    name: Board
+    filters:
+      and:
+        - status != "done"
+        - status != "dropped"
+    order:
+      - file.name
+      - formula.priority_label
+      - status
+      - formula.due_label
