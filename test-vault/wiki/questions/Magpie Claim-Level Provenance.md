@@ -16,6 +16,7 @@ tags:
   - magpie
 ---
 
+
 # Magpie Claim-Level Provenance
 
 *Should magpie implement claim-level provenance (each assertion tagged to its source) or is source-level provenance sufficient for this vault's size and use patterns?*

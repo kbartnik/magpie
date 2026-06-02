@@ -112,4 +112,4 @@ Pages not yet in the vault:
 
 See Go Program Instrumentation for the synthesis on the full instrumentation sequence (-race → testing.B → -benchmem → pprof → slog) and what the pprof gap means in practice.
 
-Open design questions: Go Generics for context.WithValue, errgroup All-Errors Collection, CGo Goroutine Scheduler Interaction, GODEBUG Governance Model.
+Open design questions: [[Go Generics for context.WithValue]], [[errgroup All-Errors Collection]], [[CGo Goroutine Scheduler Interaction]], [[GODEBUG Governance Model]].
