@@ -1,0 +1,10 @@
+# Binary
+magpie
+
+# Test artifacts
+*.test
+*.out
+coverage.html
+
+# macOS
+.DS_Store
