@@ -8,3 +8,6 @@ coverage.html
 
 # macOS
 .DS_Store
+
+# Vault tools binary (platform-specific, transitional until magpie replaces vault-tools)
+test-vault/.claude/tools/vault-tools
