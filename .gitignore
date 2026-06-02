@@ -11,3 +11,6 @@ coverage.html
 
 # Vault tools binary (platform-specific, transitional until magpie replaces vault-tools)
 test-vault/.claude/tools/vault-tools
+
+# Stray vault-tools output if run without VAULT_PATH set
+/context.md
