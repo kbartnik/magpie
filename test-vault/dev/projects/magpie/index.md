@@ -92,6 +92,10 @@ magpie-claude (`github.com/kbartnik/magpie-claude`) starts after Phase 4 — sep
 
 - [[Foundation]]
 
+## Open
+
+- [2026-06-02] Need a strategy for re-integrating vault content between `test-vault` (in this repo) and the Nexus vault — wiki pages and learning notes will diverge over time.
+
 ## Log
 
 _Session notes below, newest first_
