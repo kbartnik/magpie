@@ -3,9 +3,10 @@ title: "Go Structured Logging"
 type: concept
 status: active
 created: 2026-05-31
-updated: 2026-05-31
+updated: 2026-06-03
 sources:
   - "archive/clippings/2026-05-31-go-slog-tour.md"
+  - dev/learning/magpie-go/2026-06-03.md
 related:
   - "Go Context Patterns"
   - "Go Error Handling"
@@ -104,6 +105,37 @@ logger.Info("request",
 )
 // JSON: {"msg":"request","http":{"method":"GET","status":200}}
 ```
+
+## Packages don't log, callers do
+
+Library packages and internal packages should not log — they communicate through return values. The caller decides what's worth logging and at what level.
+
+Adding `slog.Default()` inside a library function has two problems:
+- It reaches for global state, coupling the package to whatever logger the caller configured
+- It fires in tests, producing noise even when the error is expected
+
+```go
+// wrong — package decides to log
+func Load(path string) (*Config, error) {
+    data, err := os.ReadFile(path)
+    if errors.Is(err, fs.ErrNotExist) {
+        slog.Debug("config file not found, using defaults", "path", path)
+        return &Config{}, nil
+    }
+    // ...
+}
+
+// right — caller decides to log
+cfg, err := config.Load(configPath())
+if err != nil {
+    return fmt.Errorf("loading config: %w", err)
+}
+if cfg == (&Config{}) {
+    slog.Debug("no config file found, using defaults")
+}
+```
+
+The exception is application-level code (main, cobra commands) which owns the logger and controls the program's top-level behaviour.
 
 ## See Also
 

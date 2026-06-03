@@ -3,9 +3,10 @@ title: "Go Testing Patterns"
 type: concept
 status: active
 created: 2026-05-29
-updated: 2026-06-02
+updated: 2026-06-03
 sources:
   - dev/learning/magpie-go/2026-06-02.md
+  - dev/learning/magpie-go/2026-06-03.md
 related: ["Go Error Handling", "Go File IO"]
 tags: [go, testing, tdd, testify, preflight-sync-go]
 ---
@@ -220,6 +221,17 @@ func TestClassifyFile(t *testing.T) {
 
 `t.Run` creates a named subtest. Failure output reads `TestClassifyFile/show` — the failing case is immediately identifiable. Adding a new case is one line in the struct slice.
 
+## t.Setenv
+
+Sets an environment variable for the duration of the test and automatically restores the original value when it ends:
+
+```go
+t.Setenv("XDG_CONFIG_HOME", "/tmp/xdg")
+// env var is restored when the test exits — no cleanup needed
+```
+
+Prefer `t.Setenv` over `os.Setenv` in tests. `os.Setenv` requires a manual `t.Cleanup(func() { os.Unsetenv(...) })` — if you forget it, the env var leaks into subsequent tests and causes non-deterministic failures.
+
 ## t.Cleanup
 
 Registers a function that runs after the test completes, regardless of pass or fail:
@@ -235,6 +247,8 @@ Preferred over `defer` in tests because it works correctly in helper functions c
 ## Test fixtures
 
 Each package that needs test fixtures gets a `testdata/` subdirectory alongside its `_test.go` files. Go's test runner sets the working directory to the package directory, so `testdata/foo.toml` resolves relative to the package, not the repo root.
+
+**Extension typos are silent.** If a test references `testdata/config.yml` but the file is `config.yaml`, Go treats it as a missing file — not an error. If the function under test returns a zero-value struct for missing files, the test will appear to pass. Always double-check fixture filenames against the actual files in `testdata/`.
 
 ### Locating testdata from a shared helper
 

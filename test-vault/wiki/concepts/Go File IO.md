@@ -3,8 +3,9 @@ title: "Go File IO"
 type: concept
 status: active
 created: 2026-05-29
-updated: 2026-05-29
-sources: []
+updated: 2026-06-03
+sources:
+  - dev/learning/magpie-go/2026-06-03.md
 related: ["Go Error Handling", "Go Testing Patterns"]
 tags: [go, io, filesystem, preflight-sync-go]
 ---
@@ -37,6 +38,23 @@ Callback return value controls walk behavior:
 - `fs.SkipAll` — stop walking entirely, return nil (Go 1.20+)
 
 `d.Info()` returns `(fs.FileInfo, error)` — efficient because `WalkDir` often has it cached from the directory read.
+
+## os.ReadFile and missing files
+
+`os.ReadFile` is the standard way to read a file's contents in one call. When the file doesn't exist, it returns a `*PathError` wrapping `fs.ErrNotExist` — check with `errors.Is`, not string matching:
+
+```go
+data, err := os.ReadFile(path)
+if err != nil {
+    if errors.Is(err, fs.ErrNotExist) {
+        // file absent — not necessarily an error
+        return &Config{}, nil
+    }
+    return nil, err  // permission denied, I/O error, etc.
+}
+```
+
+`errors.Is` unwraps the error chain, so it correctly matches `fs.ErrNotExist` whether it's wrapped in a `*PathError` or not. Never compare `err.Error()` strings — the message is an implementation detail.
 
 ## os.Stat
 
