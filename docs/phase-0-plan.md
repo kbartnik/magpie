@@ -82,7 +82,7 @@ Pure boilerplate. `main.go` calls `cmd.Execute()` and exits. `go.mod` declares t
 
 **Files:** `cmd/root.go`
 
-The root command wires up `PersistentPreRun` for vault resolution and an `Args` handler that catches unknown subcommands for plugin dispatch (Phase 4). For now, unknown subcommands print a placeholder message.
+The root command wires up `PersistentPreRun` for vault resolution and an `Args` handler that catches unknown subcommands for plugin dispatch (Phase 1 — not deferred to Phase 4). For now, unknown subcommands print a placeholder message; Phase 1 replaces that with `syscall.Exec` dispatch.
 
 > [!tip] Learn before or after
 > - How `PersistentPreRun` propagates to subcommands in cobra
@@ -262,7 +262,9 @@ Update `PersistentPreRun` to call `vault.Resolve(cwd)` and store the result in a
 
 ## What's Next
 
-[[Vault IO]] will cover `inbox`, `archive`, and `log` commands. Phase 0's `Resolve` and `Merge` will be called by every command from here on.
+Phase 1 (Vault I/O) covers `inbox`, `archive`, and `log` commands — and wires **plugin dispatch** alongside them. `Resolve` and `Merge` from Phase 0 will be called by every command from here on.
+
+Plugin dispatch (`syscall.Exec` for unknown subcommands) ships in Phase 1, not Phase 4. Phase 4 adds the management commands (`plugin install/remove/status`). The dispatch mechanism itself is a small addition to `cmd/root.go` — do it early so every subsequent phase can be tested against real plugin binaries.
 
 > [!tip]
 > Before starting Phase 1, ask Claude to review your `Resolve` implementation — the walk logic and error handling are where subtle bugs tend to hide.

@@ -8,7 +8,7 @@ priority: high
 due: ""
 created: 2026-05-21
 updated: 2026-06-02
-tags: [phase-1, vault-io, inbox, archive, log]
+tags: [phase-1, vault-io, inbox, archive, log, plugin-dispatch]
 ---
 
 # Vault I/O
@@ -29,7 +29,14 @@ magpie inbox capture [text]   # append to today's inbox file, increment inbox-co
 magpie inbox list             # list inbox items with filesystem timestamps
 magpie archive add <file>     # move file to archive, inject frontmatter
 magpie log append <text>      # append timestamped entry to wiki/log.md
+magpie <unknown>              # dispatch to registered plugin via syscall.Exec
 ```
+
+## Plugin Dispatch (ships this phase)
+
+Wire the unknown-subcommand handler in `cmd/root.go` to do real `syscall.Exec` dispatch — not just print a placeholder. Steps: look up the subcommand name in merged config `plugins:` map → if found, `syscall.Exec(binaryPath, os.Args[1:], envWithVault)` → if not found, print "unknown subcommand" with a hint to `magpie plugin install`.
+
+This is a small addition but it must ship in Phase 1. Phases 5 and 6 (magpie-stats, magpie-git) can't be integration-tested without it.
 
 ## You Drive
 

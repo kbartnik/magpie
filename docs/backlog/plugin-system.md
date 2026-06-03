@@ -8,12 +8,16 @@ priority: medium
 due: ""
 created: 2026-05-21
 updated: 2026-06-02
-tags: [phase-4, plugin, syscall, manifest]
+tags: [phase-1, plugin, syscall, manifest]
 ---
 
 # Plugin System
 
-Two contracts define what a plugin is. This phase implements both: the runtime dispatch contract (`syscall.Exec`) and the install-time manifest contract (`plugin.yaml` via `--manifest` flag). Everything from Phase 5 onward depends on this.
+**Dispatch wires in Phase 1, not Phase 4.** The `"plugin dispatch not yet implemented"` stub in `cmd/root.go` must be completed alongside Vault IO — before session management, lint, or init. Every subsequent phase depends on knowing that unknown subcommands route correctly.
+
+Two contracts define what a plugin is. This phase implements both: the runtime dispatch contract (`syscall.Exec`) and the install-time manifest contract (`plugin.yaml` via `--manifest` flag). Everything from Phase 2 onward depends on this.
+
+**session-start, session-end, context-update are NOT core commands.** These are provided by the `magpie-claude` plugin, which depends on magpie, not the other way around. The core binary never imports or calls Claude Code APIs. If you find yourself writing `session.go` or `context.go` in the core package, stop — that code belongs in magpie-claude.
 
 ## Learning Focus
 

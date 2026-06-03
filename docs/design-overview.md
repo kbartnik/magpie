@@ -3,7 +3,7 @@ title: "magpie — Design Overview"
 type: project-doc
 project: magpie
 created: 2026-06-02
-updated: 2026-06-02
+updated: 2026-06-03
 tags: [go, tooling, cli, design]
 ---
 
@@ -28,7 +28,21 @@ More formally: magpie is a **harness component**. `Agent = Model + Harness`. Mag
 - **Not an LLM.** No AI dependency in core. Magpie runs the same with or without Claude.
 - **Not a knowledge tool.** The vault and Claude do that. Magpie moves files, counts things, and validates structure.
 - **Not a replacement for Claude Code.** The `magpie-claude` plugin bridges them. Magpie is indifferent to which LLM uses it.
+- **Not an Obsidian tool.** The `magpie-obsidian` plugin handles Obsidian-specific features. Core only knows markdown.
 - **Not a shell script wrapper.** Compiled binary, real test suite, TDD discipline throughout.
+
+## Plugin Ecosystem
+
+The core binary is deliberately narrow. Everything system-specific lives in plugins:
+
+| Plugin | Scope | Depends on |
+|--------|-------|------------|
+| `magpie-stats` | Vault statistics — bundled, read-only | magpie core |
+| `magpie-git` | Git helpers scoped to vault | magpie core, git |
+| `magpie-claude` | Claude Code: session, hooks, skills | magpie core, jq |
+| `magpie-obsidian` | Obsidian: canvas/base, embed, `.obsidian/` config | magpie core |
+
+The boundary rule: *if a feature requires importing or parsing something system-specific (Claude Code settings.json, Obsidian canvas format, a provider's SDK), it belongs in that system's plugin.* Core should be compilable and testable with zero knowledge of these systems.
 
 ---
 
@@ -100,6 +114,9 @@ Structured error codes, not prose errors. The LLM interprets error codes into re
 **Plugin system — two contracts:**
 - *Runtime:* unknown subcommand → config lookup → `syscall.Exec` with `MAGPIE_VAULT` injected. Zero overhead; current process becomes the plugin.
 - *Install-time:* plugin embeds `plugin.yaml` via `go:embed`, exposes via `--manifest` flag. Core calls the binary to retrieve it — no co-location assumption.
+
+**Plugin dispatch wires in Phase 1.**
+The unknown-subcommand handler ships alongside the first user-visible commands (`inbox`, `archive`, `log`). Deferring it to Phase 4 would mean Phases 2–3 can't be tested against real plugin binaries. Dispatch is cheap — wire it early.
 
 **Plugin metadata is the dispatcher.**
 A plugin's `description` field in `plugin.yaml` is how the LLM routes intent to plugin. Rich, specific descriptions mean no explicit routing code is needed on the Claude side. Metadata quality is a first-class design concern, not documentation.
