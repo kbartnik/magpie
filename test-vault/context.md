@@ -1,10 +1,10 @@
 ---
 last-session: "2026-06-02"
-current-focus: Separating magpie into own repo
+current-focus: Scaffolding config package tests
 active-projects:
     - magpie
 next-actions:
-    - '[magpie] Write failing tests for Task 3 config loading'
+    - '[learn] Implement Load to make TestLoad/valid green'
 parked-ideas: []
 inbox-count: 0
 session-count: 1

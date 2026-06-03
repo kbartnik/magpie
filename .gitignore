@@ -9,6 +9,12 @@ coverage.html
 # macOS
 .DS_Store
 
+# Obsidian app state (plugins, themes, workspace UI — not vault content)
+test-vault/.obsidian/
+
+# Claude Code operational files
+.superpowers/
+
 # Vault tools binary (platform-specific, transitional until magpie replaces vault-tools)
 test-vault/.claude/tools/vault-tools
 

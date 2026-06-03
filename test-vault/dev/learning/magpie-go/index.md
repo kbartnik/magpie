@@ -27,7 +27,8 @@ Done looks like: confidently writing and reasoning about these patterns without 
 
 ## Sources Consumed
 
-- [2026-06-02] Phase 0 plan + hands-on session — repo setup, module init, docs scaffold
+- [[2026-06-02]] Phase 0 plan + hands-on session — repo setup, module init, docs scaffold
+- [[2026-06-02]] (continued) — Go testing patterns, testify setup, first config test red phase
 
 ## Key Concepts
 
@@ -35,10 +36,12 @@ Done looks like: confidently writing and reasoning about these patterns without 
 - **SSH config IdentityFile**: per-host key selection in `~/.ssh/config`; without a `Host github.com` block, `id_ed25519_github` is never offered to GitHub — see [[SSH Config]]
 - **Cobra CLI**: `PersistentPreRunE` propagates to all subcommands; `RunE` vs `Run` for error handling — see [[Cobra CLI]]
 - **XDG Base Directory**: `os.UserConfigDir()` + manual `XDG_CONFIG_HOME` check for cross-platform config paths — see [[XDG Base Directory]]
+- **testify**: `assert` continues on failure, `require` stops; `require.NoError` is the standard setup guard; `suite` provides struct-based setup/teardown — see [[Go Testing Patterns]]
+- **runtime.Caller**: returns call-stack file path baked in at compile time; `skip=1` in shared helpers anchors to the caller's package, not the helper's — see [[Go Testing Patterns]]
 
 ## What I Now Understand
 
-Repo is initialized and remote is wired. Go 1.26.3 is installed. Module is `github.com/kbartnik/magpie` with cobra and yaml.v3 dependencies. Session was mostly infrastructure — git, SSH, docs — not yet into the Go learning goals proper.
+Repo is initialized and remote is wired. Go 1.26.3 is installed. Module is `github.com/kbartnik/magpie` with cobra, yaml.v3, and testify dependencies. First config test is scaffolded and red — `TestLoad/valid_YAML_file_returns_correct_fields` fails on `require.NotNil` because `Load` returns nil. TDD red phase complete for that case.
 
 ## Open Questions
 
@@ -47,5 +50,5 @@ Repo is initialized and remote is wired. Go 1.26.3 is installed. Module is `gith
 
 ## What to Explore Next
 
-- Task 2: cobra root command — understand `PersistentPreRun` propagation and `RunE` vs `Run`
-- Task 3: `Config` struct + `Load` — XDG spec in practice
+- Implement `Load` — YAML parsing, missing-file handling, error on malformed input
+- Fill in remaining `TestLoad` and `TestConfigPath` stubs once `Load` is green
