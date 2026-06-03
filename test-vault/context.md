@@ -1,12 +1,12 @@
 ---
 last-session: "2026-06-02"
-current-focus: Scaffolding config package tests
+current-focus: Implementing config Load and configPath
 active-projects:
     - magpie
 next-actions:
-    - '[learn] Implement Load to make TestLoad/valid green'
+    - '[learn] Implement vault resolution command'
 parked-ideas: []
 inbox-count: 0
-session-count: 1
+session-count: 2
 last-nudged-command: ""
 ---
