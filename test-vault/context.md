@@ -1,12 +1,10 @@
 ---
-last-session: "2026-06-02"
-current-focus: Implementing config Load and configPath
-active-projects:
-    - magpie
-next-actions:
-    - '[learn] Implement vault resolution command'
+last-session: "2026-06-04"
+current-focus: Testing ingest pipeline
+active-projects: []
+next-actions: []
 parked-ideas: []
 inbox-count: 0
-session-count: 2
+session-count: 0
 last-nudged-command: ""
 ---
