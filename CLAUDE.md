@@ -4,9 +4,24 @@
 
 ---
 
+## Testbed vs. Reference
+
+`test-vault/` is a **testbed** — its purpose is exercising vault command workflows and validating magpie CLI behavior. It is not a reference knowledge vault.
+
+- **Nexus** (`~/Documents/Obsidian/Nexus`) is the reference vault: real knowledge, real decisions, real projects
+- **test-vault** is the testbed: synthetic scenarios, magpie-specific content, and workflow validation
+
+Content created in the test vault is either:
+1. Magpie-specific (ADRs about magpie's design, investigations into magpie's behavior, code docs for the magpie repo)
+2. Synthetic test scenarios (used to exercise a command workflow, not treated as authoritative knowledge)
+
+When a test produces broadly applicable insight, surface it for Nexus rather than keeping it here.
+
+---
+
 ## Vault
 
-The test vault lives at `test-vault/` in this repo. It is a fully functional magpie vault with `.magpie/` sentinel, wiki, project files, learning track, and archive.
+The test vault lives at `test-vault/` in this repo. It is a fully functional magpie vault with `.magpie/` sentinel, wiki, archive, and dev zones for all plugins.
 
 **VAULT_PATH:** `test-vault` (relative to repo root, resolved to absolute at runtime)
 
@@ -78,17 +93,27 @@ Proceed? (y/n)
 | `/resume` | Restore session context mid-session |
 | `/lint` | Health-check the vault |
 | `/capture` | Zero-friction inbox dump |
+| `/ingest` | Process inbox items into archive and wiki |
 | `/query` | Synthesize answer from vault |
 | `/park` | Shelve an idea, return to focus |
 | `/focus` | Check for topic drift |
 | `/next` | Break a topic into concrete first steps |
 | `/project` | Manage project files |
+| `/adr` | Create or update Architecture Decision Records |
+| `/debrief` | Write a blameless post-mortem |
+| `/inbox` | List inbox contents |
+| `/investigate` | Open or update an investigation |
+| `/code` | Import or refresh code documentation |
 
 ---
 
 ## Installed Plugins
 
-| Plugin | Zone | Commands |
-|--------|------|----------|
-| learning | `test-vault/dev/learning/` | `/learn`, `/review` |
-| projects | `test-vault/dev/projects/` | `/project` |
+| Plugin | Zone | Testbed use |
+|--------|------|-------------|
+| learning | `test-vault/dev/learning/` | magpie-specific learning tracks |
+| projects | `test-vault/dev/projects/` | (empty — projects moved to Nexus) |
+| adr | `test-vault/dev/adr/` | magpie design decisions + workflow testing |
+| code | `test-vault/dev/code/` | magpie repo documentation (`/code magpie`) |
+| debrief | `test-vault/dev/debriefs/` | magpie incidents + workflow testing |
+| investigation | `test-vault/dev/investigations/` | magpie behavior questions + workflow testing |
