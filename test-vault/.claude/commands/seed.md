@@ -21,7 +21,9 @@ Wait for the user's response. If anything other than `y`, print "Seed cancelled.
 
 **Step 2 — Copy fixtures:**
 
-Copy all files from `${VAULT_PATH:-$(pwd)}/.fixtures/` into `${VAULT_PATH:-$(pwd)}/inbox/`.
+Copy all `.md` files from `${VAULT_PATH:-$(pwd)}/.fixtures/` into `${VAULT_PATH:-$(pwd)}/inbox/`.
+
+If `${VAULT_PATH:-$(pwd)}/.fixtures/media/` exists and contains files, copy them into `${VAULT_PATH:-$(pwd)}/resources/media/`.
 
 **Step 3 — Update context.md:**
 
