@@ -90,6 +90,8 @@ Proceed? (y/n)
 | `/inbox` | List inbox contents |
 | `/investigate` | Open or update an investigation |
 | `/code` | Import or refresh code documentation |
+| `/reset` | Wipe test-generated content, restore baseline state |
+| `/seed` | Populate inbox from `.fixtures/` |
 
 ---
 
