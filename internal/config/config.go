@@ -1,3 +1,5 @@
+// Package config loads configuration files from a config file
+// and returns a populated `Config` object
 package config
 
 import (
@@ -11,6 +13,9 @@ import (
 
 // Config holds magpie configuration. All fields are optional.
 type Config struct {
+	DefaultVault string            `yaml:"default_vault"`
+	Plugins      map[string]string `yaml:"plugins"`
+
 	InboxPath   string `yaml:"inbox_path"`
 	ArchivePath string `yaml:"archive_path"`
 	LogPath     string `yaml:"log_path"`
