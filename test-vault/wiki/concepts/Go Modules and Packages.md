@@ -1,69 +1,45 @@
 ---
-type: concept
-tags: [go, tooling, dependency-management]
+tags: [concept, go]
+cluster: go
+aliases: ["go modules", "go packages", "MVS", "go.mod", "module versioning"]
+related: ["Go Tooling", "Go Interfaces", "Go Generics Type Constraints"]
+sources:
+  - "[[archive/books/2026-06-04-learning-go-2e]]"
 ---
 
 # Go Modules and Packages
 
-Go modules are the unit of versioning and distribution. A module is a tree of packages rooted at a `go.mod` file.
+## Modules vs Packages
 
-**Source:** [[archive/books/2026-06-04-learning-go-2e|Learning Go, 2nd Edition]] Ch. 10
+A **module** is a collection of packages with a shared version (defined by `go.mod`). A **package** is a directory of `.go` files that compile together. Every Go file belongs to exactly one package; packages belong to one module.
 
----
+## MVS — Minimum Version Selection
 
-## Module System
+Go's dependency resolution algorithm: when multiple modules require a dependency at different versions, Go selects the **minimum version** that satisfies all requirements. This is deliberately conservative — no automatic upgrades to latest, no semver ranges. Builds are reproducible.
 
-**`go.mod`** declares the module path, Go version, and dependencies. The module path is both the import root and the identifier used by the package registry.
+## go.mod Structure
 
 ```
-module github.com/user/mymodule
+module github.com/example/mymod
 
 go 1.22
 
 require (
-    github.com/some/dep v1.2.3
+    github.com/some/dep v1.3.2
 )
 ```
 
-**Minimal Version Selection (MVS).** When two dependencies require different versions of a third, Go picks the *minimum* version that satisfies all requirements — not the latest. This makes builds reproducible without a lockfile being strictly necessary (though `go.sum` records cryptographic hashes for verification).
+`go.sum` records the expected cryptographic hashes of all dependency versions — ensures builds use the exact bytes they were tested with.
 
-**Semantic versioning.** Major version changes (`v2+`) require a different import path suffix (`github.com/user/mymodule/v2`). This allows v1 and v2 to coexist in the same build — different packages, different imports.
+## Workspaces
 
-## Packages
+`go.work` enables multi-module development without `replace` directives. Useful when developing a library and its consumer simultaneously.
 
-A package is a directory of `.go` files sharing the same `package` declaration. The package name is the last segment of the import path by convention (but not required).
+## Internal Packages
 
-**Internal packages.** A package path containing `/internal/` can only be imported by code within the parent of `internal/`. Enforces API boundaries without making types unexported.
+A package path containing `/internal/` can only be imported by code rooted at the parent of `internal/`. Enforces module-internal encapsulation.
 
-**`init()` functions.** Each file can have an `init()` function that runs once at program startup, after all variable initializations. Multiple `init()` functions per package are allowed; order within a package is by source file name. Avoid side-effect-heavy `init()` — prefer explicit initialization.
+## Connections
 
-## Workspaces (`go.work`)
-
-Go workspaces (`go work`) let multiple modules be developed together locally without publishing. The `go.work` file redirects imports for specified modules to local paths.
-
-```
-go 1.22
-
-use (
-    ./mymodule
-    ./mylib
-)
-```
-
-Useful for: developing a library and its consumer simultaneously; testing a fork before it's published.
-
-## Key Commands
-
-| Command | Purpose |
-|---------|---------|
-| `go mod tidy` | Remove unused deps, add missing ones |
-| `go mod vendor` | Copy deps into `vendor/` for offline builds |
-| `go get pkg@version` | Add or upgrade a dependency |
-| `go work init` | Create a workspace |
-| `go list -m all` | List all modules in the build |
-
----
-
-## Related
-
-- [[Go Tooling]] — linting, vulnerability scanning, build tags
+- [[Go Tooling]] — `go mod tidy`, `go mod vendor`, `govulncheck` operate on the module graph
+- [[Go Generics Type Constraints]] — the `golang.org/x/exp/constraints` package illustrates how experimental APIs graduate through the module system

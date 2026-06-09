@@ -1,91 +1,41 @@
 ---
-type: concept
-tags: [ml, llm, architecture, deep-learning]
+tags: [concept, transformers, llm]
+cluster: transformers
+aliases: ["transformers", "LLM architecture", "attention architecture", "GPT architecture"]
+related: ["Tokenization", "Softmax", "Attention Mechanism", "Backpropagation", "RLHF"]
+sources:
+  - "[[archive/videos/2026-06-04-3b1b-transformers-tech-behind-llms]]"
+  - "[[archive/videos/2026-06-04-3b1b-attention-transformers]]"
 ---
 
 # Transformer Architecture
 
-The core invention underlying the current AI boom. GPT = Generative Pre-trained Transformer. Every major LLM (GPT, Claude, Gemini) is a transformer.
+End-to-end data flow: **tokenize → embed → [attention + MLP] × N → unembed → softmax → sample**
 
-**Primary source:** [[archive/videos/2026-06-04-3b1b-transformers-tech-behind-llms|3Blue1Brown — Transformers, the tech behind LLMs (Ch. 5)]]
+## Data Flow
 
----
+1. **Tokenization** — text split into tokens (subwords); each token gets an integer ID
+2. **Embedding** — token IDs mapped to high-dimensional vectors (W_E matrix)
+3. **Positional encoding** — position information added to embeddings
+4. **Transformer blocks** × N — alternating attention layers (tokens exchange information) and MLP layers (per-token transformation)
+5. **Unembedding** — final vector projected back to vocabulary space (W_U matrix)
+6. **Softmax** — logits converted to probability distribution over next token
 
-## End-to-End Data Flow
+## Embedding Geometry
 
-```
-Input text
-  → tokenize → token IDs
-  → embedding matrix (W_E) lookup → sequence of vectors
-  → [attention block → MLP block] × N layers
-  → unembedding matrix (W_U) → logits
-  → softmax → probability distribution over next tokens
-  → sample → append to input → repeat
-```
+The embedding space is not arbitrary — it encodes semantic relationships. Famous example: `king - man + woman ≈ queen`. These relationships are emergent from training, not designed.
 
-At inference: sample a token from the distribution, append it to the input, repeat. This is what every LLM chatbot is doing — one token at a time.
+W_E (embedding matrix) and W_U (unembedding matrix) are approximate transposes. Some models tie these weights entirely, halving parameter count for those matrices.
 
-## Embedding Matrix (W_E)
+## Scale
 
-The first weight matrix. Converts token IDs to dense vectors.
+GPT-3: 175B parameters. Most are in the MLP layers (~2/3), not the attention mechanism. Each attention block uses 96 heads × 128 dimensions = 12,288 total attention dimensions per layer.
 
-- **GPT-3 shape:** 12,288 × 50,257 — one 12,288-dimensional column per token in the vocabulary
-- **Parameters:** ~617 million
+## Connections
 
-**Geometry is learned, not designed.** Directions in the high-dimensional space carry semantic meaning because that organization minimized prediction error during training. The model invented its own internal language:
-
-- King − Man + Woman ≈ Queen
-- Plural direction: `(cats − cat)` points toward other plurals
-- These regularities emerge; they are not programmed
-
-## Context Window
-
-GPT-3 processes 2,048 tokens simultaneously, each as a 12,288-dimensional vector. The full array (2,048 × 12,288) flows through all layers. The context limit explains why early ChatGPT lost the thread of long conversations.
-
-## Attention and MLP Blocks
-
-Two alternating block types, applied N times:
-
-**Attention blocks** — vectors "talk to each other." Each position can read from and update based on other positions. This is where context-dependent meaning is assembled. (See Ch. 6 for the full mechanism.)
-
-**MLP (multi-layer perceptron) blocks** — each vector is processed independently through the same operation. Interpretable as the model "looking up" stored knowledge about each position's current representation.
-
-All operations are matrix multiplications. GPT-3's 175B weights are ~28,000 distinct matrices across 8 categories.
-
-## Unembedding Matrix (W_U)
-
-The last weight matrix. Maps the final-layer vector to logits over the vocabulary.
-
-- **GPT-3 shape:** 50,257 × 12,288 — the transpose of W_E's shape
-- **Parameters:** ~617 million
-- In some models, W_U and W_E literally share weights — the same geometric space encodes input meaning and scores output candidates
-
-**Training efficiency:** every vector in the final layer simultaneously predicts what comes *after* its position. Not just the last vector.
-
-## Weights vs. Data
-
-A sharp distinction emphasized throughout:
-
-- **Weights** — learned during training, fixed at inference. The "brains." GPT-3: 175B.
-- **Data** — the specific input for this run, transformed layer by layer. Discarded after the run.
-
-Embedding + unembedding account for ~1.2B of GPT-3's 175B parameters. The remaining ~174B live in the attention and MLP layers (covered in Ch. 6/7).
-
-## Temperature
-
-Controls sampling randomness via [[Softmax]]:
-
-| Temperature | Effect |
-|-------------|--------|
-| T → 0 | Always picks most probable token (greedy/deterministic) |
-| T = 1 | Standard sampling |
-| T < 1 | Sharper distribution — more conservative |
-| T > 1 | Flatter distribution — more varied/surprising |
-
----
-
-## Related
-
-- [[Tokenization]] — how text becomes token IDs
-- [[Softmax]] — converts logits to probability distribution
-- [[LLM Mental Model]] — next-token prediction loop, weights-vs-data distinction
+- [[Tokenization]] — first stage of the pipeline; context limits are in tokens, not characters
+- [[Softmax]] — final stage; also used inside attention to convert scores to weights
+- [[Attention Mechanism]] — the mechanism that lets tokens exchange information across positions
+- [[Backpropagation]] — transformers are trained via gradient descent through backpropagation
+- [[Transfer Learning]] — pre-trained transformer weights are the source model for fine-tuning
+- [[Embeddings]] — the W_E matrix produces token embeddings; intermediate representations are contextual embeddings

@@ -1,38 +1,41 @@
 ---
-type: concept
-tags: [neuroscience, adhd, anatomy]
+tags: [concept, adhd, neuroscience]
+cluster: adhd
+aliases: ["frontostriatal", "PFC basal ganglia circuit", "prefrontal striatal loop", "dopamine circuit"]
+related: ["ADHD", "Executive Function", "Working Memory", "Barkley Inhibition Model"]
+sources:
+  - "[[archive/papers/2026-06-04-adhd-neurobiology-primer-notes]]"
 ---
 
 # Frontostriatal Circuit
 
-The neural pathway linking the **prefrontal cortex (PFC)** with the **basal ganglia** (striatum and related structures). The most consistently implicated circuit in ADHD across neuroimaging research.
+The circuit linking **prefrontal cortex (PFC)** with **basal ganglia** (primarily the caudate nucleus and putamen) via dopamine-mediated loops. The most consistently implicated circuit in ADHD research.
 
----
+## Structure
 
-## Anatomy
+- **PFC** → sends projections to striatum (caudate, putamen)
+- **Striatum** → projects to globus pallidus and substantia nigra
+- **Substantia nigra / VTA** → sends dopaminergic projections back to PFC and striatum (the reward signal)
 
-- **Prefrontal cortex** — executive function, working memory, impulse control, planning
-- **Striatum** (caudate nucleus, putamen, nucleus accumbens) — reward processing, motor control, habit formation
-- **Connections** — the circuit runs bidirectionally via direct and indirect pathways through the basal ganglia loop
+This loop mediates goal-directed behavior, inhibitory control, working memory, and reward processing.
 
-## Role in ADHD
+## Why It Matters for ADHD
 
-Reduced volume in the caudate nucleus and PFC white matter (two nodes of this circuit) are the most replicated structural findings in ADHD. Functional dysregulation in the circuit explains:
+- Structural imaging: reduced caudate volume is among the most replicated ADHD findings
+- Functional imaging: hypoactivation of PFC-striatal circuits during inhibition tasks
+- Pharmacology: stimulants increase dopamine in this circuit → symptom reduction
 
-- **Inattention** — PFC dysfunction reduces top-down attention control
-- **Hyperactivity/impulsivity** — striatal dysregulation affects inhibitory control
-- **Reward processing differences** — nucleus accumbens involvement; dopamine signaling differences
+## EF Components and Their Substrates
 
-## Dopamine Hypothesis
+| EF Component | Primary Region |
+|---|---|
+| Inhibition | Right inferior frontal cortex, caudate |
+| Working memory | Dorsolateral PFC, parietal cortex |
+| Cognitive flexibility | Anterior cingulate cortex, lateral PFC |
 
-The frontostriatal circuit is heavily dopaminergic. Stimulant medications (methylphenidate, amphetamine) act by increasing dopamine availability in this circuit, which is the primary mechanistic explanation for their efficacy in ADHD.
+## Connections
 
----
-
-## Sources
-
-- [[archive/papers/2026-06-04-adhd-neurobiology-primer-notes|ADHD Neurobiology Primer Notes]]
-
-## Related
-
-- [[ADHD]] — clinical context for this circuit
+- [[ADHD]] — structural and functional frontostriatal differences are the neurological substrate of ADHD symptoms
+- [[Executive Function]] — all three EF components depend on dopamine-mediated frontostriatal loops
+- [[Working Memory]] — dorsolateral PFC (frontostriatal) is the primary substrate of working memory's central executive
+- [[Barkley Inhibition Model]] — maps directly onto right-inferior-frontal-cortex + caudate function

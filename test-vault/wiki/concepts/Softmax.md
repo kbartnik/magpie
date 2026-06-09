@@ -1,48 +1,36 @@
 ---
-type: concept
-tags: [ml, math, activation-function]
+tags: [concept, transformers, ml-fundamentals]
+cluster: transformers
+aliases: ["softmax function", "temperature scaling", "logits to probabilities"]
+related: ["Transformer Architecture", "Attention Mechanism", "Loss Functions"]
+sources:
+  - "[[archive/videos/2026-06-04-3b1b-transformers-tech-behind-llms]]"
 ---
 
 # Softmax
 
-Converts a vector of arbitrary real-valued **logits** into a valid probability distribution (all values positive, sum to 1). Used at the output layer of [[Transformer Architecture]] to score the next token, and inside the attention mechanism to score which positions to attend to.
+Converts a vector of real-valued logits into a probability distribution: all values positive, sum to 1.
 
-**Source:** [[archive/videos/2026-06-04-3b1b-transformers-tech-behind-llms|3Blue1Brown — Transformers Ch. 5]]
+## Formula
 
----
+`softmax(x_i) = e^x_i / Σ e^x_j`
 
-## The Operation
-
-Given logits `z₁, z₂, ..., zₙ`:
-
-```
-softmax(zᵢ) = e^zᵢ / Σ e^zⱼ
-```
-
-1. Raise `e` to the power of each logit — makes all values positive
-2. Divide each by the sum — normalizes to sum = 1
-3. The largest inputs dominate exponentially; small inputs get near-zero weight
+The exponential amplifies differences — a small lead in raw scores becomes a large difference in probabilities.
 
 ## Temperature Scaling
 
-Temperature `T` is applied as `e^(zᵢ/T)`:
+Dividing logits by temperature T before softmax:
+- **T < 1** — sharpens the distribution (more deterministic, top token dominates)
+- **T > 1** — flattens the distribution (more random, lower-probability tokens get more weight)
+- **T → 0** — argmax (always pick the highest-scoring token)
 
-| T | Effect |
-|---|--------|
-| T → 0 | Argmax — always picks the highest logit (greedy decoding) |
-| T = 1 | Standard softmax |
-| T < 1 | Sharper distribution — concentrates probability on top tokens |
-| T > 1 | Flatter distribution — spreads probability, more surprising outputs |
+## Uses in Transformers
 
-Temperature is a sampling-time hyperparameter, not a learned weight. Higher T increases creativity at the cost of coherence; lower T increases consistency at the cost of variety.
+1. **Output layer** — converts final logits to next-token probabilities for sampling
+2. **Inside attention** — converts attention scores (QK dot products) to attention weights; scaled by 1/√d_k to prevent saturation
 
-## In Attention
+## Connections
 
-Inside attention blocks, softmax converts raw attention scores (dot products between query and key vectors) into **attention weights** — how much each position contributes to updating a given position's vector.
-
----
-
-## Related
-
-- [[Transformer Architecture]] — softmax at the output layer and inside attention
-- [[Tokenization]] — the vocabulary over which softmax produces a distribution
+- [[Transformer Architecture]] — final stage of the pipeline; also used inside every attention head
+- [[Attention Mechanism]] — softmax converts raw QK dot products to attention weights
+- [[Loss Functions]] — cross-entropy loss is computed from softmax output probabilities during training
