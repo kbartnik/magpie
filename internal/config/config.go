@@ -1,5 +1,4 @@
-// Package config loads configuration files from a config file
-// and returns a populated `Config` object
+// Package config handles loading and parsing magpie configuration files.
 package config
 
 import (
