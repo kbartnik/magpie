@@ -1,42 +1,34 @@
 ---
-type: concept
-tags: [ml, llm, nlp]
+tags: [concept, transformers, llm]
+cluster: transformers
+aliases: ["BPE tokenization", "subword tokenization", "token vocabulary", "byte pair encoding"]
+related: ["Transformer Architecture", "Embeddings", "Softmax"]
+sources:
+  - "[[archive/videos/2026-06-04-3b1b-transformers-tech-behind-llms]]"
 ---
 
 # Tokenization
 
-The process of breaking input text into **tokens** — the discrete units an LLM operates on. Tokens are not characters or words; they're the vocabulary items the model was trained with.
-
-**Source:** [[archive/videos/2026-06-04-3b1b-transformers-tech-behind-llms|3Blue1Brown — Transformers Ch. 5]]
-
----
-
-## What a Token Is
-
-Tokens are words, word-pieces, punctuation, or other common character sequences — whatever unit minimizes vocabulary size while keeping sequences manageable. Common words are single tokens; rare words are split into sub-word pieces.
-
-- GPT-3 vocabulary: **50,257 tokens**
-- Common words: one token (`cat`, `the`, `running`)
-- Rare words: multiple tokens (`antidisestablishmentarianism` → several pieces)
-- Whitespace and punctuation: their own tokens
-
-For images and audio, tokens are patches or chunks of the raw signal.
-
-## Why It Matters
-
-The context window limit is measured in **tokens**, not characters or words. GPT-3: 2,048 tokens. GPT-4: up to 128k. The tokenization choice affects:
-
-- How much text fits in context
-- How the model "sees" code vs. prose (code often tokenizes less efficiently)
-- Surprising edge cases (single characters sometimes split across tokens, affecting counting tasks)
+Text is converted to integer token IDs before entering a transformer. Tokenization determines what a model "sees."
 
 ## Byte Pair Encoding (BPE)
 
-The most common tokenization algorithm. Starts with individual bytes/characters, then iteratively merges the most frequent adjacent pairs into new vocabulary items. Produces a vocabulary that covers the training distribution efficiently.
+GPT-style models use BPE: start with individual characters, iteratively merge the most frequent adjacent pairs. Result: common words become single tokens; rare words split into subwords.
 
----
+GPT-3 vocabulary: 50,257 tokens. Common English words are one token; uncommon words, technical terms, and non-English text require multiple tokens.
 
-## Related
+## Why Context Limits Are in Tokens
 
-- [[Transformer Architecture]] — tokenization is the first step in the data flow
-- [[Softmax]] — the final layer converts to a probability distribution over the token vocabulary
+The transformer's attention operates over token positions, not characters. A 128K token limit is ~96K English words or far fewer tokens of code or non-Latin-script text — tokenization efficiency varies dramatically by language and domain.
+
+## Non-Intuitive Splits
+
+- `"unhappiness"` → `["un", "happiness"]` or `["un", "happy", "ness"]` depending on training corpus
+- Numbers: `"12345"` might be `["123", "45"]` — arithmetic on tokenized numbers is indirect
+- Code: whitespace-heavy languages tokenize less efficiently than dense languages
+
+## Connections
+
+- [[Transformer Architecture]] — tokenization is the first stage of the pipeline
+- [[Embeddings]] — each token ID maps to an embedding vector via W_E
+- [[Attention Mechanism]] — attention operates over token positions; positional encoding is per-token

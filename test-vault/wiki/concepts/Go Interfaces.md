@@ -1,64 +1,45 @@
 ---
-type: concept
-tags: [go, types, design]
+tags: [concept, go]
+cluster: go
+aliases: ["golang interfaces", "implicit interfaces", "duck typing Go", "interface satisfaction"]
+related: ["Go Modules and Packages", "Go Error Handling", "Go Generics Type Constraints", "Go Functional Options Pattern"]
+sources:
+  - "[[archive/books/2026-06-04-learning-go-2e]]"
+  - "[[archive/books/2026-06-04-go-programming-language]]"
 ---
 
 # Go Interfaces
 
-Go interfaces are **implicitly satisfied** — a type implements an interface simply by having the required methods. No `implements` declaration. This is type-safe duck typing: the compiler checks the contract at compile time without requiring explicit coupling between the implementing type and the interface definition.
+Go interfaces are satisfied implicitly — no `implements` keyword. Any type that has the required methods satisfies the interface automatically.
 
-**Source:** [[archive/books/2026-06-04-learning-go-2e|Learning Go, 2nd Edition]] Ch. 7
+## Key Rules
 
----
+**Accept interfaces, return structs.** Function parameters should be interface types (accept the widest useful type); return values should be concrete types (give callers the most information).
 
-## Core Rules
+**Nil interface gotcha.** A nil pointer wrapped in an interface is not nil. `var p *MyType = nil; var i MyInterface = p` — `i != nil` is true even though the underlying value is nil. Check interface nilness by checking the concrete value.
 
-**Accept interfaces, return structs.** Function parameters should be interfaces (maximum flexibility for callers); return types should be concrete (callers get a fully specified value with no surprises). This rule emerges directly from the implicit satisfaction model — requiring an interface as a parameter means any type with those methods works.
+**Interface embedding.** Interfaces can embed other interfaces: `io.ReadWriter` embeds `io.Reader` and `io.Writer`. This composes behaviors without inheritance.
 
-**Implicit satisfaction means zero coupling.** The type and the interface can live in completely separate packages and never reference each other. The interface can be defined by the consumer (where it's used), not the producer (where the type is defined). This is the inverse of most OO languages.
+**The empty interface (`any`).** `interface{}` / `any` accepts all types but loses type safety. Prefer concrete types or constrained generics.
 
-## The nil Interface Gotcha
-
-An interface value has two parts: the **type** and the **value**. An interface is only `nil` when both are nil.
+## Type Assertions and Switches
 
 ```go
-var p *MyType = nil       // p is nil
-var i MyInterface = p     // i is NOT nil — it has a type (*MyType) with a nil value
-fmt.Println(i == nil)     // false — this surprises almost everyone
-```
+// Type assertion — panics if wrong type
+s := i.(string)
 
-Returning a concrete `nil` pointer as an interface causes this. Return the interface type directly when the function signature returns an interface.
+// Safe type assertion
+s, ok := i.(string)
 
-## Interface Composition
-
-Interfaces compose by embedding:
-
-```go
-type ReadWriter interface {
-    Reader  // embeds io.Reader
-    Writer  // embeds io.Writer
-}
-```
-
-The Go standard library is built on small, composable interfaces (`io.Reader`, `io.Writer`, `io.Closer`) rather than large ones.
-
-## Type Assertions and Type Switches
-
-```go
-// Assert a specific type (panics if wrong; use two-value form)
-v, ok := i.(MyType)
-
-// Switch over possible types
+// Type switch
 switch v := i.(type) {
-case *MyType:   // v is *MyType here
-case int:       // v is int here
-default:        // v is the original interface type
+case string: ...
+case int: ...
 }
 ```
 
----
+## Connections
 
-## Related
-
-- [[Go Error Handling]] — `error` is an interface; the nil gotcha applies
-- [[Go Generics Type Constraints]] — type constraints are interface syntax
+- [[Go Generics Type Constraints]] — generics and interfaces solve adjacent problems; the decision point: heterogeneous collections → interfaces; homogeneous collections → generics
+- [[Go Error Handling]] — `error` is an interface; sentinel errors, custom error types, and errors.As all work through interface satisfaction
+- [[Go Functional Options Pattern]] — option functions operate on concrete struct types, not interfaces; the interplay illustrates when to use each

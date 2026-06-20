@@ -12,7 +12,7 @@ import (
 
 // testdata returns the absolute path to a file under testdata/.
 // Using runtime.Caller keeps the path correct regardless of where
-// `go test` his invoked from.
+// `go test` is invoked from.
 func testdata(name string) string {
 	_, file, _, _ := runtime.Caller(0)
 	return filepath.Join(filepath.Dir(file), "testdata", name)
@@ -24,6 +24,8 @@ func TestLoad(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, cfg)
 
+		assert.Equal(t, "/home/user/notes", cfg.DefaultVault)
+		assert.Equal(t, map[string]string{"archive": "builtin"}, cfg.Plugins)
 		assert.Equal(t, "/home/user/notes/inbox", cfg.InboxPath)
 		assert.Equal(t, "/home/user/notes/archive", cfg.ArchivePath)
 		assert.Equal(t, "/home/user/notes/log.md", cfg.LogPath)
@@ -49,25 +51,18 @@ func TestLoad(t *testing.T) {
 
 func TestConfigPath(t *testing.T) {
 	t.Run("XDG_CONFIG_HOME unset → ~/.config/magpie/config.yaml", func(t *testing.T) {
-		configPath := configPath()
+		t.Setenv("XDG_CONFIG_HOME", "")
 
-		userConfigDir, err := os.UserConfigDir()
+		expected, err := os.UserConfigDir()
+		require.NoError(t, err)
+		require.NotEmpty(t, expected)
 
-		require.Nil(t, err)
-		require.NotNil(t, userConfigDir)
-
-		assert.Equal(t, configPath, filepath.Join(userConfigDir, "magpie", "config.yaml"))
+		assert.Equal(t, filepath.Join(expected, "magpie", "config.yaml"), configPath())
 	})
 
 	t.Run("XDG_CONFIG_HOME set → $XDG_CONFIG_HOME/magpie/config.yaml", func(t *testing.T) {
 		t.Setenv("XDG_CONFIG_HOME", "/tmp/xdg")
-		configPath := configPath()
 
-		userConfigDir, err := os.UserConfigDir()
-
-		require.Nil(t, err)
-		require.NotNil(t, userConfigDir)
-
-		assert.Equal(t, "/tmp/xdg/magpie/config.yaml", configPath)
+		assert.Equal(t, "/tmp/xdg/magpie/config.yaml", configPath())
 	})
 }

@@ -1,43 +1,41 @@
 ---
-type: concept
-tags: [adhd, neuroscience, health]
+tags: [concept, adhd, neuroscience]
+cluster: adhd
+aliases: ["attention deficit hyperactivity disorder", "ADD", "attention deficit disorder", "ADHD neuroscience"]
+related: ["Frontostriatal Circuit", "Executive Function", "Working Memory", "Barkley Inhibition Model", "Intrinsic Motivation", "Metacognition", "Deliberate Practice"]
+sources:
+  - "[[archive/papers/2026-06-04-adhd-neurobiology-primer-notes]]"
 ---
 
 # ADHD
 
-Attention Deficit Hyperactivity Disorder — a neurodevelopmental condition characterized by inattention, hyperactivity, and impulsivity, with a well-characterized neurobiological basis.
-
----
+Neurodevelopmental condition characterized by persistent inattention, hyperactivity/impulsivity, and executive function deficits. Estimated prevalence: 5–7% globally. Symptoms often persist into adulthood.
 
 ## Structural Findings
 
-The most consistent neuroimaging findings (Rege/PsychSceneHub primer; Tripp & Wickens 2009):
+Most consistently implicated circuit: **frontostriatal** (PFC ↔ basal ganglia). Structural differences:
+- Reduced total brain volume (~3–5%)
+- Smaller caudate nucleus
+- Reduced PFC white matter
+- Smaller corpus callosum
+- Smaller cerebellar vermis
 
-- **Overall brain size reduction** — the most replicated finding across studies
-- **Caudate nucleus** — reduced volume; part of the basal ganglia, central to reward and motor control
-- **Prefrontal cortex white matter** — reduced; affects executive function circuitry
-- **Corpus callosum** — reduced; affects inter-hemispheric communication
-- **Cerebellar vermis** — reduced; affects timing and motor coordination
+Cortical thinning in prefrontal regions often resolves in adolescence — but behavioral symptoms may persist even as structural differences normalize.
 
-**Cortical thinning** is observed in childhood and resolves in adolescence — clinical significance of timing is an open question.
+## Theoretical Accounts
 
-**Ventral striatum reduction** shows negative correlation with childhood hyperactivity/impulsivity symptoms.
+**Barkley's inhibition model:** ADHD is fundamentally a disorder of *behavioral inhibition*, not attention. Inattention and working memory deficits are downstream of impaired inhibition. See [[Barkley Inhibition Model]].
 
-## Key Circuit
+**Executive function deficit model:** ADHD as impaired EF — inhibition, WM updating, and cognitive flexibility. The hot EF (emotionally charged situations) is more impaired than cool EF (neutral tasks). See [[Executive Function]].
 
-The **[[Frontostriatal Circuit]]** — linking prefrontal cortex with basal ganglia — is the most convincingly implicated circuit across ADHD research. Dysfunction here explains executive function deficits, reward processing differences, and motor control issues.
+**Dopamine dysregulation:** Reduced dopaminergic signaling in the frontostriatal circuit affects reward processing and motivation. Stimulant medications increase dopamine availability.
 
-## Source Quality Note
+## Connections
 
-Structural findings above are drawn from a secondary teaching document (PsychSceneHub primer). Treat as a visual reference framework; cite Tripp & Wickens 2009 as the primary source for specific claims.
-
----
-
-## Sources
-
-- [[archive/papers/2026-06-04-adhd-neurobiology-primer-notes|ADHD Neurobiology Primer Notes]] (secondary — PsychSceneHub)
-- Tripp & Wickens 2009 — primary neurobiological source
-
-## Related
-
-- [[Frontostriatal Circuit]] — the key circuit implicated in ADHD
+- [[Frontostriatal Circuit]] — the primary neurological substrate of ADHD symptoms
+- [[Executive Function]] — ADHD is primarily an EF disorder; hot/cool EF distinction explains lab vs real-world divergence
+- [[Working Memory]] — prospective nonverbal WM is specifically impaired per Barkley; central executive deficit per CLT framing
+- [[Barkley Inhibition Model]] — the most influential single account of ADHD mechanism
+- [[Intrinsic Motivation]] — dopamine dysregulation affects the reward system that SDT's competence need taps
+- [[Deliberate Practice]] — deliberate practice requires sustained concentration and self-direction — both EF-dependent
+- [[Metacognition]] — ADHD impairs metacognitive regulation (monitoring, planning); external calibration is more necessary

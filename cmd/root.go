@@ -1,3 +1,4 @@
+// Package cmd implements the magpie command-line interface.
 package cmd
 
 import (

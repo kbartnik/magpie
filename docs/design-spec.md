@@ -3,7 +3,7 @@ title: magpie — Design Spec
 type: project-doc
 project: magpie
 created: 2026-05-21
-updated: 2026-06-03
+updated: 2026-06-20
 downstream: "[[magpie — Red Team Review]]"
 tags:
   - go
@@ -16,16 +16,9 @@ tags:
 
 ## What Magpie Is
 
-Magpie is a Go CLI tool that provides a clean, testable, single-binary interface for vault operations. It replaces `vault-tools` — a collection of fragile shell scripts — with a compiled binary that is reliable, hookable, and ruthlessly modular via a plugin system.
+Magpie is a **domain-specific LLM harness** for knowledge vaults — a Go CLI and MCP server that provides a clean, testable, single-binary interface for vault operations. It replaces `vault-tools` with a compiled binary that is reliable, hookable, and extensible via plugins.
 
-Magpie is a **pure vault tool**. It has no dependency on Claude Code, Obsidian, or any LLM. Integration with those systems is handled by plugins that depend on magpie — not the other way around:
-
-- **`magpie-claude`** — Claude Code integration: session management, hook installation, skill deployment
-- **`magpie-obsidian`** — Obsidian-specific features: canvas/base file handling, `.obsidian/` config integration, Obsidian-aware vault health checks
-- **`magpie-stats`** — read-only vault statistics (bundled; validates runtime contract)
-- **`magpie-git`** — vault git helpers (bundled; validates manifest contract)
-
-The core binary knows nothing about any of these systems. If you find yourself importing Claude Code APIs, Obsidian APIs, or LLM SDKs into core — stop. That code belongs in a plugin.
+Magpie has no dependency on Claude Code, Obsidian, or any LLM in its core. The harness intelligence is in the domain layer — vault graph analysis, delta validation, domain-aware querying — not in LLM integration code. Claude Code integration is handled by a separate plugin (`magpie-claude`) that depends on magpie, not the other way around.
 
 ---
 
@@ -160,8 +153,6 @@ Two contracts define what a plugin is.
 
 ### Contract 1: Runtime
 
-**Dispatch wires in Phase 1, not Phase 4.** The unknown-subcommand handler in `cmd/root.go` must route to registered plugins before Vault I/O commands ship. Every phase from 1 onward validates that the dispatch mechanism works.
-
 When magpie receives an unknown subcommand, it looks up the subcommand name in the **`plugins:` map in merged config** (global `~/.config/magpie/config.yaml` merged with vault-local `.magpie/config.yaml`) and dispatches via `syscall.Exec` (process replacement — zero overhead). The current process becomes the plugin.
 
 Plugins are **not** discovered by scanning PATH for `magpie-<name>` binaries. A plugin must be explicitly registered via `magpie plugin install` before it is available as a subcommand.
@@ -224,26 +215,26 @@ Core handles: version check, tool dependency checks, skill file extraction and c
 | `inbox list` | List inbox items with timestamps from filesystem |
 | `archive add <file>` | Move file to archive, inject frontmatter |
 | `log append <text>` | Append timestamped entry to `wiki/log.md` |
-| `lint` | Validate vault structure and schema versions |
+| `index` | Raw JSONL index of all wiki pages (metadata + filesystem timestamps) |
+| `query "topic"` | Domain-aware ranked results using vault graph and confidence signals |
+| `lint` | Validate vault structure and schema versions; `--limit`, `--summary` for output control |
 | `init vault` | Create `.magpie/`, `context.md`, required dirs |
 | `init project` | Scaffold a project in `dev/projects/` |
-| `context status` | Display vault state (reads frontmatter + body sections) |
+| `context status` | Domain-aware oracle briefing (vault state + attention signals + available tools) |
+| `schema [version]` | Full schema contract; called on version mismatch |
+| `mcp serve` | Run as MCP server (stdio transport) — LLMs discover tools via protocol |
 | `plugin install <path>` | Call `<binary> --manifest`, process result, register plugin |
 | `plugin remove <name>` | Unwind plugin installation |
 | `plugin status <name>` | Check plugin installation state |
 | `plugin list` | List registered plugins |
+
+All read commands support `--limit N` (item count) and `--summary` (counts and category breakdowns). All write commands return `effects` (what changed) and `delta` (vault health impact, when VaultGraph is available) in the response envelope.
 
 ### Bundled plugins (same repo)
 
 **magpie-stats** — vault statistics. Walk vault, count notes by section, report inbox depth, archive size, last log entry. Read-only. Validates the runtime contract.
 
 **magpie-git** — vault git helpers. `magpie git status/commit/log` scoped to vault root. Validates both contracts: runtime dispatch and manifest with tool dependency check and `post_install`.
-
-### External plugins
-
-**magpie-claude** (`github.com/kbartnik/magpie-claude`) — Claude Code integration. Session start/end, `context park`, hook installation, skill deployment. Depends on magpie; core has zero knowledge of Claude Code.
-
-**magpie-obsidian** — Obsidian-specific vault tooling. Canvas and Base file management, `.obsidian/` config integration, Obsidian-aware health checks (wikilink format, callout syntax, embed resolution). Depends on magpie; core has zero knowledge of Obsidian's APIs or file formats beyond plain markdown.
 
 ---
 
@@ -266,28 +257,30 @@ Core handles: version check, tool dependency checks, skill file extraction and c
 
 ---
 
-## Phase Sequence
+## Development Model
 
-### magpie (this repo)
+### Pull model with walking skeleton
 
-| Phase | Name | Key deliverables |
-|---|---|---|
-| 0 | Foundation | Cobra CLI, vault resolution, `.magpie/` sentinel, two-tier config merge |
-| 1 | Vault I/O | `inbox`, `archive`, `log` commands, `context.md` frontmatter writes, **plugin dispatch** (unknown subcommand → `syscall.Exec`) |
-| 2 | Lint | Vault structure validation, alias-gap check, orphan detection, schema version check, TTY-detected output |
-| 3 | Init | `init vault` (`.magpie/`, `context.md`, dirs), `init project` |
-| 4 | Plugin management | Manifest contract (`--manifest` flag), `plugin install/remove/status/list` |
-| 5 | magpie-stats | Bundled plugin — validates runtime contract end-to-end |
-| 6 | magpie-git | Bundled plugin — validates manifest contract with tool dep check and `post_install` |
-| 7 | Context | `context status`, body section read |
-| 8 | Migration | Cutover from vault-tools, all existing tests pass |
+No fixed phase sequence. Backlog items have `depends-on` fields and `milestone` (1.0 vs post-1.0). Items are pulled just-in-time based on dependency readiness and interest.
 
-**Phase 1 note:** plugin dispatch ships here — not Phase 4. Phase 4 delivers the management
-commands (`plugin install/remove/status`). The dispatch mechanism (`syscall.Exec` on unknown
-subcommands) is cheap to wire and validates the architecture immediately. Phases 5 and 6 would
-be untestable without it.
+**Walking skeleton MVP (3 items):**
+- Foundation — Cobra CLI, vault resolution, config merge, response envelope with effects/delta/hint
+- Write Primitives — `inbox capture`, `archive add`, `log append` with `--dry-run` and effects
+- Index (Thin) — raw JSONL index (metadata + timestamps, no VaultGraph)
 
-### magpie-claude (separate repo — starts after Phase 4)
+**Natural next pulls after skeleton:**
+- Read Query Layer — VaultGraph, `magpie query`, full index with confidence signals, `--limit`/`--summary`
+- Lint — 9 core checks, coverage reporting (fail-closed), `--limit`/`--summary`
+- MCP Transport — expose commands as MCP tools via stdio
+- Delta Validation — post-write vault health checks against VaultGraph
+- Context/Oracle — domain-aware briefing with attention signals
+
+**Remaining 1.0 items (pulled on need):**
+- Test Harness, Plugin System, Plugin Manifest Lifecycle, magpie-stats, magpie-git, Lint Fix Mode, Init, Maintenance, Migration
+
+**Plugin dispatch note:** the unknown-subcommand handler (`syscall.Exec`) ships alongside Write Primitives, not with Plugin System. The dispatch mechanism is cheap to wire and validates the architecture immediately.
+
+### magpie-claude (separate repo)
 
 | Phase | Name | Key deliverables |
 |---|---|---|
@@ -296,18 +289,7 @@ be untestable without it.
 | C | Sync | `sync inbox-count`, notification hook |
 | D | Init | Install hooks, skills, MCP servers — full bootstrap with user permission |
 
-**session-start, session-end, context-update are not core commands.** They live in Phase B of
-magpie-claude. The core binary never writes session state — it does not know what a session is.
-
-### magpie-obsidian (separate repo — post-1.0)
-
-| Phase | Name | Key deliverables |
-|---|---|---|
-| A | Foundation | Plugin scaffold, `.obsidian/` config reader, canvas/base file types |
-| B | Lint extensions | Wikilink format check, callout syntax validation, embed resolution |
-| C | Vault ops | Obsidian-aware archive (preserve embeds), Base file scaffolding |
-
-**Post-1.0:** `go extract` graduates to `sonar` (`github.com/kbartnik/sonar`).
+Session management is not a core command — the core binary never writes session state.
 
 ---
 
@@ -325,7 +307,9 @@ magpie-claude. The core binary never writes session state — it does not know w
 - Multi-vault: `magpie vaults list` by scanning for `.magpie/` directories
 - Additional `context` subcommands: `focus`, `next`, `pop`, `clear-parked`
 - `magpie init vault --upgrade` migration UX
-- Observability event log: `.magpie/events/YYYY-MM-DD.jsonl` structured sidecar alongside `wiki/log.md`; enables `magpie stats` and cron analytics
-- Cron autonomy: background vault health checks, orphan detection, stale link sweeping; results filed to `.magpie/reports/`
+- Observability event log: `.magpie/events/YYYY-MM-DD.jsonl` structured sidecar alongside `wiki/log.md`
+- Cron autonomy: background vault health checks, orphan detection, stale link sweeping
+- Dream-gather: semantic maintenance signals (long pages, hub promotion, tag clusters, purge candidates). Strict separation: lint = correctness, dream = optimization
 - Event bus — plugin-to-plugin pub/sub (under research; needs multiple real plugins for design pressure)
-- `sonar` project scope and interface with magpie-claude
+- `sonar`: `go extract` graduates to standalone project (`github.com/kbartnik/sonar`)
+- magpie-obsidian: Obsidian-specific vault tooling (canvas/base, callout validation, hub presentation checks)
