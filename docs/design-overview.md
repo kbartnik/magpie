@@ -3,56 +3,56 @@ title: "magpie — Design Overview"
 type: project-doc
 project: magpie
 created: 2026-06-02
-updated: 2026-06-20
+updated: 2026-06-21
 tags: [go, tooling, cli, design]
 ---
 
 # magpie — Design Overview
 
-A five-minute read. What magpie is, why it exists, and the principles that should govern every decision made while building it. Implementation details live in [[magpie — Design Spec]].
+A five-minute read. What magpie is, why it exists, and the principles that should govern every decision made while building it.
 
 ---
 
 ## What Magpie Is
 
-Magpie is a **domain-specific LLM harness** for knowledge vaults.
+Magpie is a **library-first, domain-specific LLM harness** for knowledge vaults.
 
-Not a general tool server that happens to operate on vaults, but a harness that *understands* vaults well enough to co-pilot the LLM through vault operations. It contextualizes every operation with domain knowledge, validates intent before execution, and reports domain-relevant feedback after execution.
+Its core is a **stateless Go library** of vault operations that accept structured inputs and return `Result` value objects. **Thin front-ends** — the CLI (`cmd/magpie`) and the MCP server (`cmd/magpie-mcp`) — consume the library and own serialization, envelope formatting, and process lifecycle. "Harness" is the role these front-ends play when wiring the library to an LLM-driving context, with the MCP server being the most harness-like.
 
-The LLM is magpie's primary consumer. Magpie returns information in a minimal, machine-friendly way using fixed, versioned schemas (the **oracle**), handles every purely mechanical operation the LLM shouldn't have to reason through (the **executor**), and actively uses domain knowledge to make each response more useful — reporting what changed about vault health, what attention items exist, and what to consider next.
+The LLM is magpie's primary consumer. Magpie returns complete, domain-aware facts in one round trip — using fixed, versioned schemas (the **oracle**), handling every purely mechanical operation the LLM shouldn't have to reason through (the **executor**), and reporting what changed about vault health after each write. The differentiator vs. a general tool server: *complete domain-aware facts in one round trip* — magpie delivers judgment-ready data, not suggestions about what to do next.
 
 The founding split remains: if a task requires reasoning, it belongs to the LLM; if it's mechanical and testable without a model, it belongs to magpie. The harness framing adds a third role: if it requires *domain knowledge* to contextualize an LLM's action, that also belongs to magpie.
 
-More formally: `Agent = Model + Harness`. Magpie is the harness — the compiled runtime that converts LLM decisions into reliable filesystem operations, feeds the LLM exactly what it needs to orient and decide, and uses vault domain knowledge to validate and enrich every interaction. It doesn't think. It orients, validates, executes, and reports.
+More formally: `Agent = Model + Harness`. Magpie is the harness — the compiled runtime that converts LLM decisions into reliable filesystem operations, feeds the LLM exactly what it needs to orient and decide, and uses vault domain knowledge to validate and enrich every interaction. It doesn't think. It orients, validates, executes, and reports — facts in, judgment out.
 
 ---
 
 ## What Magpie Is Not
 
-- **Not an LLM — despite being LLM-first.** Designing *for* an LLM caller and depending *on* one are different things. Core has zero AI dependency and runs identically with any provider, or none; `magpie-claude` is what bridges it to Claude Code specifically.
+- **Not an LLM — despite being LLM-first.** Designing *for* an LLM caller and depending *on* one are different things. The library has zero AI dependency and runs identically with any provider, or none; `magpie-claude` is what bridges it to Claude Code specifically.
 - **Not a knowledge tool.** The vault and Claude do that. Magpie moves files, counts things, and validates structure.
 - **Not a replacement for Claude Code.** The `magpie-claude` plugin bridges them. Magpie is indifferent to which LLM uses it.
-- **Not an Obsidian tool.** The `magpie-obsidian` plugin handles Obsidian-specific features. Core only knows markdown.
+- **Not an Obsidian tool.** The `magpie-obsidian` plugin handles Obsidian-specific features. The library only knows markdown.
 - **Not a shell script wrapper.** Compiled binary, real test suite, TDD discipline throughout.
 
 ## Plugin Ecosystem
 
-The core binary is deliberately narrow — it owns only the vault contract. Three plugin families surround it:
+The library is deliberately narrow — it owns only the vault contract. Three plugin families surround it:
 
-- **Harness plugins** (above core): `magpie-claude` today; future provider plugins (`magpie-openai`, etc.) follow the same contract. They bridge magpie to whichever LLM is driving it and own the `model_tier` / `effort` / `token_budget` routing hints.
-- **Domain plugins** (alongside core): `magpie-stats`, `magpie-git`. They extend what the vault can do — statistics, git operations — without bridging to an LLM or a rendering surface. Pure vault-domain capability; no dependency beyond their own tooling.
-- **Frontend plugins** (below core): `magpie-obsidian` today, future rendering surfaces tomorrow. They translate vault state into something a human-facing tool can render.
+- **Harness plugins** (above the library): `magpie-claude` today; future provider plugins (`magpie-openai`, etc.) follow the same contract. They bridge magpie to whichever LLM is driving it and own the `model_tier` / `effort` / `token_budget` routing hints.
+- **Domain plugins** (alongside the library): `magpie-stats`, `magpie-git`. They extend what the vault can do — statistics, git operations — without bridging to an LLM or a rendering surface. Pure vault-domain capability; no dependency beyond their own tooling.
+- **Frontend plugins** (below the library): `magpie-obsidian` today, future rendering surfaces tomorrow. They translate vault state into something a human-facing tool can render.
 
 | Plugin | Family | Scope | Depends on |
 |--------|--------|-------|------------|
-| `magpie-stats` | Domain | Vault statistics — bundled, read-only | magpie core |
-| `magpie-git` | Domain | Git helpers scoped to vault | magpie core, git |
-| `magpie-claude` | Harness | Claude Code: session, hooks, skills | magpie core, jq |
-| `magpie-obsidian` | Frontend | Obsidian: canvas/base, embed, `.obsidian/` config | magpie core |
+| `magpie-stats` | Domain | Vault statistics — bundled, read-only | magpie library |
+| `magpie-git` | Domain | Git helpers scoped to vault | magpie library, git |
+| `magpie-claude` | Harness | Claude Code: session, hooks, skills | magpie library, jq |
+| `magpie-obsidian` | Frontend | Obsidian: canvas/base, embed, `.obsidian/` config | magpie library |
 
-The boundary rule: *if a feature requires importing or parsing something system-specific (Claude Code settings.json, Obsidian canvas format, a provider's SDK), it belongs in that system's plugin.* Core should be compilable and testable with zero knowledge of these systems.
+The boundary rule: *if a feature requires importing or parsing something system-specific (Claude Code settings.json, Obsidian canvas format, a provider's SDK), it belongs in that system's plugin.* The library should be compilable and testable with zero knowledge of these systems.
 
-**Transport adapters are not plugins.** CLI and MCP determine *how* a caller reaches core — plugins determine *what* the vault does. Core is transport-agnostic: it returns Go structs, and each adapter owns its own serialization and envelope format. The MCP adapter is a thin wrapper around the same core, not a redesign.
+**The library-first stack:** `internal/` packages (the library) → front-ends (`cmd/magpie`, `cmd/magpie-mcp`). The library returns `Result` value objects; each front-end owns its serialization and envelope format. **Plugin dispatch is a front-end concern:** the CLI uses `syscall.Exec`; the MCP server uses `exec.Command`. **MCP exposes core only for 1.0** — plugins remain CLI-reachable; plugins-as-own-MCP-servers is reserved post-1.0; the MCP-proxy approach was rejected (see [[ADR-0001: Adopt a library-first architecture for magpie]]).
 
 ---
 
@@ -77,7 +77,13 @@ stdout is always machine-parseable. Warnings, hints, and progress messages go to
 When stdout is a pipe (hook or script context), output is JSON. When stdout is a terminal, output is human-readable. No `--json` flag required for normal use. The context determines the format.
 
 **Every response is a harness contract.**
-The response envelope carries `schema_version` (passive drift detection), `status` (ok/warning/blocked), `effects` (what changed — files created, modified, deleted), `delta` (vault health changes caused by this operation), and `hint` (suggested next action). The LLM gets complete feedback in one round trip — no follow-up calls needed to learn what happened.
+The response envelope carries `schema_version` (passive drift detection), `status` (ok/warning/blocked), `dry_run` (preview flag), `data` (the operation's payload), `effects` (what changed — files created, modified, deleted), and `delta` (vault health changes caused by this operation). The LLM gets complete, domain-aware facts in one round trip — no follow-up calls needed to learn what happened.
+
+**The envelope lives in the front-ends, not the library.**
+The library returns `Result` value objects — plain Go structs with json tags as a convenience, carrying `Status`, `Effects`, `Delta`, and operation-specific data. Each front-end serializes its own envelope and maps `Status` its own way: the CLI maps it to exit codes (0/1/2); the MCP server maps it to `isError`.
+
+**Graph-optionality is a parameter, never a parallel implementation.**
+`checkHealth(graph, scope)` and `Index(vault, graph)` are single functions where the graph is an optional input. When graph data is available, results are richer; when it's absent, the operation still succeeds with reduced coverage. No separate "with-graph" vs. "without-graph" code paths.
 
 **Terse by default.**
 LLMs and hooks call magpie frequently. Output should be as compact as correct allows. Read commands support `--limit` and `--summary` to control output size — the LLM requests "top 5 results" rather than "everything."
@@ -122,20 +128,30 @@ Structured error codes, not prose errors. The LLM interprets error codes into re
 
 ### The Layer Stack
 
-Three plugin families surround core — harness plugins above, domain plugins alongside, frontend plugins below — and core is reached only through transport adapters, which own serialization and aren't plugins themselves:
+Three plugin families surround the library — harness plugins above, domain plugins alongside, frontend plugins below — and the library is consumed through thin front-ends that own serialization:
 
-| Layer | Purpose | Core or Plugin |
+| Layer | Purpose | Library, Front-end, or Plugin |
 |---|---|---|
-| Transport adapter | CLI flags → core; MCP JSON-RPC → core (both 1.0) | Adapter, not plugin |
-| Oracle | Domain-aware LLM orientation with attention signals (`context status`, `magpie schema`) | Core |
-| Executor | Atomic writes with exit-code flow control and effects reporting (`inbox capture`, `archive add`, `log append`) | Core |
-| Delta validation | Post-write vault health checks (broken links, orphans, alias mismatches) | Core |
-| Content extraction | Domain-aware query + bidirectional graph traversal (`query`, `context gather`) | Core |
-| Relevance signals | `page-confidence` — magpie-computed, never LLM-computed | Core |
+| CLI front-end | CLI flags → library; envelope + exit codes; `syscall.Exec` plugin dispatch | Front-end (`cmd/magpie`) |
+| MCP front-end | JSON-RPC → library; envelope + `isError` mapping; `exec.Command` plugin dispatch | Front-end (`cmd/magpie-mcp`) |
+| Oracle | Domain-aware LLM orientation (`context status`, `magpie schema`) | Library |
+| Executor | Atomic writes with exit-code flow control and effects reporting (`inbox capture`, `archive add`, `log append`) | Library |
+| Delta validation | Post-write vault health checks (broken links, orphans, alias mismatches) | Library |
+| Content extraction | Domain-aware query + graph-optional traversal (`query`, `context gather`) | Library |
+| Relevance signals | `page-confidence` — magpie-computed, never LLM-computed | Library |
 | Model routing | `model_tier` / `effort` / `token_budget` hints declared in plugin manifest | Harness plugin |
 | Frontend | Obsidian rendering, `.obsidian/` config | Frontend plugin |
 
-Core is **transport-agnostic**: it accepts structured requests and returns Go structs. Each adapter — CLI and MCP — owns its own envelope formatting and serialization.
+The library lives under `internal/` (publish-on-demand) and returns `Result` value objects — plain Go structs. Each front-end owns its envelope formatting and serialization.
+
+**Canonical package layout:**
+
+```
+internal/  result/ vault/ config/ graph/ health/ index/ query/ inbox/ archive/ log/
+cmd/       magpie/  magpie-mcp/
+```
+
+`internal/result/` holds the `Status` enum + `Effects`/`Delta`/data structs (plain Go, json tags as convenience, no envelope). The envelope + `Status`→exit-code mapping live in `cmd/magpie`; `cmd/magpie-mcp` maps `Status`→`isError`.
 
 **Vault sentinel:** `.magpie/` directory. Its presence is sufficient — no registry, no manifest.
 
@@ -144,9 +160,31 @@ Core is **transport-agnostic**: it accepts structured requests and returns Go st
 2. CWD walk upward — stops at first `.magpie/` ancestor
 3. `default_vault` in global config — fallback
 
+**Response envelope** (front-end concern — the library returns `Result` value objects; each front-end wraps them):
+
+```json
+{
+  "schema_version": 0,
+  "status": "ok | warning | blocked",
+  "dry_run": false,
+  "data": { },
+  "effects": { "created": [], "modified": [], "deleted": [] },
+  "delta": { }
+}
+```
+
+- `schema_version` — passive drift detection; version 0 = unstable until 1.0, field changes are free, no migration.
+- `status` — `ok` (success), `warning` (user error, non-fatal), `blocked` (hard failure, cannot proceed).
+- `dry_run` — `true` when previewing; same shape as a live run, no state touched.
+- `data` — operation-specific payload.
+- `effects` — filesystem changes: files created, modified, deleted.
+- `delta` — vault health changes caused by this operation.
+
+**Config merge:** global (`~/.config/magpie/config.yaml`) + vault-local (`.magpie/config.yaml`), vault wins, zero-values never override non-zero globals. YAML via `yaml.v3`.
+
 **Plugin system — two contracts:**
-- *Runtime:* unknown subcommand → config lookup → `syscall.Exec` with `MAGPIE_VAULT` injected. Zero overhead; current process becomes the plugin.
-- *Install-time:* plugin embeds `plugin.yaml` via `go:embed`, exposes via `--manifest` flag. Core calls the binary to retrieve it — no co-location assumption.
+- *Runtime:* unknown subcommand → config lookup → plugin dispatch with `MAGPIE_VAULT` injected. The CLI front-end uses `syscall.Exec` (zero overhead; current process becomes the plugin); the MCP front-end uses `exec.Command`.
+- *Install-time:* plugin embeds `plugin.yaml` via `go:embed`, exposes via `--manifest` flag. The front-end calls the binary to retrieve it — no co-location assumption.
 
 **Plugin dispatch wires in Phase 1.**
 The unknown-subcommand handler ships alongside the first user-visible commands (`inbox`, `archive`, `log`). Deferring it to Phase 4 would mean Phases 2–3 can't be tested against real plugin binaries. Dispatch is cheap — wire it early.
@@ -155,7 +193,7 @@ The unknown-subcommand handler ships alongside the first user-visible commands (
 A plugin's `description` field in `plugin.yaml` is how the LLM routes intent to plugin. Rich, specific descriptions mean no explicit routing code is needed on the Claude side. Metadata quality is a first-class design concern, not documentation.
 
 **Provider strategy — narrow scope.**
-Magpie core has no LLM dependency. `magpie-claude` is the Claude Code adapter. Future providers (`magpie-openai`, etc.) follow the same plugin contract. No abstraction layer needed in core — the plugin contract *is* the abstraction.
+The magpie library has no LLM dependency. `magpie-claude` is the Claude Code harness plugin. Future providers (`magpie-openai`, etc.) follow the same plugin contract. No abstraction layer needed in the library — the plugin contract *is* the abstraction.
 
 ---
 
@@ -178,7 +216,7 @@ Same model as [[preflight-sync-go]], with an explicit Go learning layer added:
 - **TDD throughout.** Tests are written before implementation. Every phase has a failing test suite before a line of production code is written.
 - **Tutorial material before implementation.** Where relevant, each phase opens with Go language concepts and idiomatic patterns — not generic documentation, but the specific idioms the phase will use. Each tutorial block is labeled and skippable: say "I know this" and we move straight to the You Drive. If a gap surfaces during implementation, it gets filled in context rather than by backtracking.
 - **You Drive sections.** Each phase identifies the design decisions that matter — the ones with real trade-offs. Claude scaffolds boilerplate and advises; the user implements the meaningful choices.
-- **Pull model.** No fixed phase sequence. Backlog items have dependency links and are pulled just-in-time based on readiness and interest. The walking skeleton (Foundation + Write Primitives + Index) ships first; VaultGraph + Lint are the natural second pull. Plans are written at the start of each sprint, not upfront.
+- **Pull model.** No fixed phase sequence. Backlog items have dependency links and are pulled just-in-time based on readiness and interest. The walking skeleton — library (vault resolve + config + one write + graph-optional `Index` returning `Result`) → `cmd/magpie` front-end (serialize, exit codes, `syscall.Exec` plugin dispatch); MCP is the second front-end, the reward. VaultGraph + Lint are the natural second pull. Plans are written at the start of each sprint, not upfront.
 - **Test vault in repo.** `testdata/vault/` is a hermetic fixture vault embedded in the repo. Tests that write copy it to `t.TempDir()` first. No external vault dependency.
 
 ---
@@ -200,6 +238,6 @@ Same model as [[preflight-sync-go]], with an explicit Go learning layer added:
 | Document | Purpose |
 |----------|---------|
 | **This doc** | Design philosophy, principles, architecture vision |
-| [[magpie — Design Spec]] | Implementation reference: schemas, config formats, command contracts, phase sequence |
+| [[ADR-0001: Adopt a library-first architecture for magpie]] | Architecture decision: library-first reframe, front-end split, envelope ownership |
 | [[magpie — Red Team Review]] | Adversarial review: hidden assumptions, failure modes, resolved blockers |
 | Backlog items | Dependency-linked items with `depends-on` fields and `milestone` (1.0 vs post-1.0). Items tagged `mvp` are the walking skeleton. Items tagged `research` are open questions awaiting investigation. Development uses a scrum-like pull model — items are pulled by dependency readiness, not fixed phase order. `backlog.base` is the live, sortable view. |
