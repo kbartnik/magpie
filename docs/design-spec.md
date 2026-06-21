@@ -132,7 +132,9 @@ Inbox filenames and capture timestamps are derived from the `inbox/` directory v
 
 ### Schema versioning
 
-Integer versions map to discrete migration functions: `migrate1to2()`, `migrate2to3()`. Chained to bring any vault to current. `magpie lint` warns on stale schema. `magpie init vault --upgrade` migrates.
+**Schema version 0 = unstable.** While pre-1.0, `schema_version` is fixed at `0` in the response envelope. Fields may be added, changed, or removed without migration. Bumping to `1` is the signal that the contract is stable.
+
+Once stable, integer versions map to discrete migration functions: `migrate1to2()`, `migrate2to3()`. Chained to bring any vault to current. `magpie lint` warns on stale schema. `magpie init vault --upgrade` migrates.
 
 - Adding an optional field with a clear default → no bump
 - Adding a required field, removing, or renaming → bump
