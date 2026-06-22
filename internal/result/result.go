@@ -12,3 +12,5 @@ const (
 	// StatusBlocked indicates a hard block — destructive op with unmet precondition.
 	StatusBlocked Status = "blocked"
 )
+
+
