@@ -1,9 +1,10 @@
-package result
+package cmd
 
 import (
 	"encoding/json"
 	"testing"
 
+	"github.com/kbartnik/magpie/internal/result"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -19,11 +20,10 @@ func TestWrap(t *testing.T) {
 		envelope := Wrap(testData{})
 
 		assert.Equal(t, SchemaVersion, envelope.SchemaVersion)
-		assert.Equal(t, StatusOK, envelope.Status)
+		assert.Equal(t, result.StatusOK, envelope.Status)
 	})
 
 	t.Run("zero-value DryRun Effects Delta omitted from JSON", func(t *testing.T) {
-		// Marshal a Wrap result, unmarshal into map[string]any, assert those keys are absent
 		envelope := Wrap(testData{Name: "test", Count: 1})
 
 		data, err := json.Marshal(envelope)
@@ -33,19 +33,17 @@ func TestWrap(t *testing.T) {
 		err = json.Unmarshal(data, &raw)
 		require.NoError(t, err)
 
-		// These keys should be present
 		assert.Contains(t, raw, "schema_version")
 		assert.Contains(t, raw, "status")
 		assert.Contains(t, raw, "data")
 
-		// These keys should be absent
 		assert.NotContains(t, raw, "dry_run")
 		assert.NotContains(t, raw, "effects")
 		assert.NotContains(t, raw, "delta")
 	})
 
 	t.Run("all Status values serialize correctly", func(t *testing.T) {
-		for _, status := range []Status{StatusOK, StatusWarning, StatusBlocked} {
+		for _, status := range []result.Status{result.StatusOK, result.StatusWarning, result.StatusBlocked} {
 			envelope := Envelope[testData]{Status: status}
 
 			data, err := json.Marshal(envelope)
@@ -60,10 +58,9 @@ func TestWrap(t *testing.T) {
 	})
 
 	t.Run("JSON round-trip preserves all fields", func(t *testing.T) {
-		// Set every field (including DryRun, Effects, Delta), marshal, unmarshal back into Envelope[testData], assert equal
 		original := Envelope[testData]{
 			SchemaVersion: 0,
-			Status:        StatusOK,
+			Status:        result.StatusOK,
 			DryRun:        true,
 			Data:          testData{Name: "test", Count: 5},
 			Effects:       []string{"created:foo.md"},
