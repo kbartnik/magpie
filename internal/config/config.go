@@ -39,8 +39,8 @@ func Load(path string) (*Config, error) {
 	return &cfg, nil
 }
 
-// configPath returns the path to the global config file, honoring XDG_CONFIG_HOME.
-func configPath() string {
+// ConfigPath returns the path to the global config file, honoring XDG_CONFIG_HOME.
+func ConfigPath() string {
 	if xdg := os.Getenv("XDG_CONFIG_HOME"); xdg != "" {
 		return filepath.Join(xdg, "magpie", "config.yaml")
 	}

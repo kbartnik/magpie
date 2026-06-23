@@ -57,12 +57,12 @@ func TestConfigPath(t *testing.T) {
 		require.NoError(t, err)
 		require.NotEmpty(t, expected)
 
-		assert.Equal(t, filepath.Join(expected, "magpie", "config.yaml"), configPath())
+		assert.Equal(t, filepath.Join(expected, "magpie", "config.yaml"), ConfigPath())
 	})
 
 	t.Run("XDG_CONFIG_HOME set → $XDG_CONFIG_HOME/magpie/config.yaml", func(t *testing.T) {
 		t.Setenv("XDG_CONFIG_HOME", "/tmp/xdg")
 
-		assert.Equal(t, "/tmp/xdg/magpie/config.yaml", configPath())
+		assert.Equal(t, "/tmp/xdg/magpie/config.yaml", ConfigPath())
 	})
 }
