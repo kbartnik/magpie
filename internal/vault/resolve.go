@@ -21,7 +21,7 @@ var ErrNoVault = errors.New("no vault found: set MAGPIE_VAULT, add default_vault
 // Returns ErrNoVault if no vault is found through any tier.
 func Resolve(cwd string, defaultValue string) (string, error) {
 	vaultRoot, exists := os.LookupEnv("MAGPIE_VAULT")
-	if exists {
+	if exists && vaultRoot != "" {
 		return vaultRoot, nil
 	}
 
