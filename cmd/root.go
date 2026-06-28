@@ -47,7 +47,11 @@ func MergedConfig(cmd *cobra.Command) *config.Config {
 // Execute is the entry point called from main.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		os.Exit(1)
+		code := 1
+		if ec, ok := err.(ExitCoder); ok {
+			code = ec.ExitCode()
+		}
+		os.Exit(code)
 	}
 }
 
