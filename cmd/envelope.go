@@ -16,11 +16,16 @@ type Envelope[T any] struct {
 	Delta         any           `json:"delta,omitempty"`   // vault health changes (null until VaultGraph exists)
 }
 
-// Wrap returns data wrapped in an envelope at the current schema version.
-func Wrap[T any](data T) Envelope[T] {
+// WrapStatus returns data wrapped in an envelope at the current schema version and status
+func WrapStatus[T any](data T, status result.Status) Envelope[T] {
 	return Envelope[T]{
 		SchemaVersion: SchemaVersion,
-		Status:        result.StatusOK,
+		Status:        status,
 		Data:          data,
 	}
+}
+
+// Wrap returns data wrapped in an envelope at the current schema version an a status of “
+func Wrap[T any](data T) Envelope[T] {
+	return WrapStatus(data, result.StatusOK)
 }
