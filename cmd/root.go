@@ -22,39 +22,11 @@ const (
 var vaultFlag string
 
 var rootCmd = &cobra.Command{
-	Use:          "magpie",
-	Short:        "Obsidian vault CLI",
-	Args:         cobra.ArbitraryArgs,
-	SilenceUsage: true,
-	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
-		cwd, err := os.Getwd()
-		if err != nil {
-			return fmt.Errorf("getting working directory: %w", err)
-		}
-
-		vaultRoot, err := vault.Resolve(cwd, vaultFlag)
-		if err != nil {
-			return fmt.Errorf("resolving vault directory: %w", err)
-		}
-
-		globalCfg, err := config.Load(config.ConfigPath())
-		if err != nil {
-			return fmt.Errorf("loading global configuration: %w", err)
-		}
-
-		localCfg, err := config.Load(filepath.Join(vaultRoot, ".magpie", "config.yaml"))
-		if err != nil {
-			return fmt.Errorf("loading local configuration: %w", err)
-		}
-
-		merged := config.Merge(globalCfg, localCfg)
-
-		ctx := context.WithValue(cmd.Context(), vaultRootKey, vaultRoot)
-		ctx = context.WithValue(ctx, mergedCfgKey, merged)
-		cmd.SetContext(ctx)
-
-		return nil
-	},
+	Use:               "magpie",
+	Short:             "Obsidian vault CLI",
+	Args:              cobra.ArbitraryArgs,
+	SilenceUsage:      true,
+	PersistentPreRunE: initVaultContext,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) > 0 {
 			fmt.Fprintf(os.Stderr, "unknown subcommand %q (plugin dispatch not yet implemented)\n", args[0])
@@ -81,4 +53,34 @@ func Execute() {
 
 func init() {
 	rootCmd.PersistentFlags().StringVar(&vaultFlag, "vault", "", "vault path (overrides MAGPIE_VAULT)")
+}
+
+func initVaultContext(cmd *cobra.Command, _ []string) error {
+	cwd, err := os.Getwd()
+	if err != nil {
+		return fmt.Errorf("getting working directory: %w", err)
+	}
+
+	vaultRoot, err := vault.Resolve(cwd, vaultFlag)
+	if err != nil {
+		return fmt.Errorf("resolving vault directory: %w", err)
+	}
+
+	globalCfg, err := config.Load(config.ConfigPath())
+	if err != nil {
+		return fmt.Errorf("loading global configuration: %w", err)
+	}
+
+	localCfg, err := config.Load(filepath.Join(vaultRoot, ".magpie", "config.yaml"))
+	if err != nil {
+		return fmt.Errorf("loading local configuration: %w", err)
+	}
+
+	merged := config.Merge(globalCfg, localCfg)
+
+	ctx := context.WithValue(cmd.Context(), vaultRootKey, vaultRoot)
+	ctx = context.WithValue(ctx, mergedCfgKey, merged)
+	cmd.SetContext(ctx)
+
+	return nil
 }
