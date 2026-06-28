@@ -1,16 +1,7 @@
 # CLAUDE.md — magpie
 
-> **Transitional note:** Skills and commands currently use `vault-tools` (Nexus binary, copied to `test-vault/.claude/tools/`). Phase 8 (Migration) replaces all `vault-tools` calls with `magpie` subcommands and removes the copied binary.
+## Test Fixtures
 
----
+Go test fixtures live at `testdata/vault/` — a minimal vault with `.magpie/config.yaml` and `context.md`. Tests that need a vault copy this to `t.TempDir()`.
 
-## Test Vault
-
-The test vault lives at `test-vault/` in this repo. See `test-vault/CLAUDE.md` for vault operation instructions.
-
-**VAULT_PATH** must be set to the absolute path when running vault commands from the repo root:
-```
-VAULT_PATH=/Users/kurt/Source/magpie/test-vault
-```
-
-When Claude Code is opened directly from `test-vault/`, `${VAULT_PATH:-$(pwd)}` resolves correctly without this variable.
+The interactive development vault is `~/Documents/Obsidian/Nexus`.
