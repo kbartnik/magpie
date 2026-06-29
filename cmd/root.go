@@ -5,9 +5,12 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"syscall"
 
 	"github.com/kbartnik/magpie/internal/config"
+	"github.com/kbartnik/magpie/internal/result"
 	"github.com/kbartnik/magpie/internal/vault"
 	"github.com/spf13/cobra"
 )
@@ -26,14 +29,9 @@ var rootCmd = &cobra.Command{
 	Short:             "Obsidian vault CLI",
 	Args:              cobra.ArbitraryArgs,
 	SilenceUsage:      true,
+	SilenceErrors:     true,
 	PersistentPreRunE: initVaultContext,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		if len(args) > 0 {
-			fmt.Fprintf(os.Stderr, "unknown subcommand %q (plugin dispatch not yet implemented)\n", args[0])
-			return nil
-		}
-		return cmd.Help()
-	},
+	RunE:              runRoot,
 }
 
 func VaultRoot(cmd *cobra.Command) string {
@@ -87,4 +85,26 @@ func initVaultContext(cmd *cobra.Command, _ []string) error {
 	cmd.SetContext(ctx)
 
 	return nil
+}
+
+func resolvePlugin(subcommand string) (string, error) {
+	return exec.LookPath("magpie-" + subcommand)
+}
+
+func runRoot(cmd *cobra.Command, args []string) error {
+	if len(args) > 0 {
+		path, err := resolvePlugin(args[0])
+		if err != nil {
+			env := WrapStatus(map[string]string{"error": "plugin not found: magpie-" + args[0]}, result.StatusWarning)
+			_ = Print(env)
+			return StatusErr(result.StatusWarning, fmt.Errorf("plugin not found: magpie-%s", args[0]))
+		}
+
+		envv := append(os.Environ(), "MAGPIE_VAULT="+VaultRoot(cmd))
+		if err := syscall.Exec(path, append([]string{"magpie-" + args[0]}, args[1:]...), envv); err != nil {
+			return fmt.Errorf("exec %s: %w", path, err)
+		}
+		return nil // unreachable on success
+	}
+	return cmd.Help()
 }

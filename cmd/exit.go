@@ -27,7 +27,7 @@ func statusExitCode(s result.Status) int {
 	}
 }
 
-// StatuErr wraps err with a result.Status so the process exits with the corresponding code.
+// StatusErr wraps err with a result.Status so the process exits with the corresponding code.
 func StatusErr(status result.Status, err error) error {
 	return &statusError{status: status, err: err}
 }

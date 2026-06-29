@@ -131,3 +131,25 @@ archive_path: global-archive
 		require.ErrorIs(t, err, vault.ErrNoVault)
 	})
 }
+
+func TestResolvePlugin(t *testing.T) {
+	t.Run("known plugin returns path", func(t *testing.T) {
+		dir := t.TempDir()
+		stub := filepath.Join(dir, "magpie-hello")
+		require.NoError(t, os.WriteFile(stub, []byte("!#/bin/sh\n"), 0o755))
+		t.Setenv("PATH", dir+string(os.PathListSeparator)+os.Getenv("PATH"))
+
+		got, err := resolvePlugin("hello")
+		require.NoError(t, err)
+
+		assert.Equal(t, stub, got)
+	})
+
+	t.Run("unknown plugin returns error", func(t *testing.T) {
+		t.Setenv("PATH", t.TempDir()) // isolated dir, no binaries
+
+		_, err := resolvePlugin("unknown")
+
+		assert.Error(t, err)
+	})
+}
